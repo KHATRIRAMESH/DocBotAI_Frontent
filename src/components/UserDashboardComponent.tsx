@@ -1,65 +1,64 @@
-import DashboardSidebar from "./DashboardSideBar";
-
+import { Building2, CarFront, GraduationCap, Handshake, HeartPulse, HousePlus } from "lucide-react";
+import LoanCard from "./shared/LoanCard"
 const loanTypes = [
   {
     name: "Home Loan",
-    description: "Low interest rates for your dream house.",
-    icon: "🏠",
+    description: "Competitive rates and flexible terms for your dream home.",
+    icon: <HousePlus size={26}/>
   },
   {
     name: "Education Loan",
-    description: "Invest in your future with flexible education loans.",
-    icon: "🎓",
+    description: "Affordable funding for higher education and future goals.",
+    icon: <GraduationCap size={26}/>,
   },
   {
     name: "Personal Loan",
-    description: "Quick cash for any personal needs, anytime.",
-    icon: "💼",
+    description: "Quick cash for personal needs with easy repayment and terms.",
+    icon: <Handshake size={26}/>,
   },
   {
     name: "Car Loan",
-    description: "Drive your dream car with easy financing.",
-    icon: "🚗",
+    description: "Low rates to finance your next vehicle smoothly.",
+    icon: <CarFront size={26}/>,
   },
   {
     name: "Business Loan",
-    description: "Fuel your business growth with tailored loans.",
-    icon: "🏢",
+    description: "Tailored loans to support your business growth.",
+    icon: <Building2 size={26}/>,
   },
   {
     name: "Medical Loan",
-    description: "Get financial support for medical emergencies.",
-    icon: "🏥",
+    description: "Fast financial help for medical emergencies.",
+    icon: <HeartPulse size={26}/>,
   },
 ];
 
+
 const UserDashboardComponent = () => {
   return (
-    <div className="flex flex-row ">
-      <DashboardSidebar />
-      <section className="bg-radial-[at_25%_25%] from-white to-zinc-900 to-75% min-h-screen w-full">
-        <div className="max-w-6xl mx-auto px-6 py-20">
-          <h2 className="text-4xl font-bold text-center text-shadow-white mb-12">
-            Choose Your Loan Type
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            {loanTypes.map((loan) => {
-              return (
-                <div
-                  key={loan.name}
-                  className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition"
-                >
-                  <h4 className="text-xl font-semibold mb-2 text-gray-900">
-                    {loan.icon} {loan.name}
-                  </h4>
-                  <p className="text-gray-600">{loan.description}</p>
-                </div>
-              );
-            })}
-          </div>
+    <section className="min-h-screen w-full bg-[#F5F5F5]">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <h2 className="text-5xl font-bold font-outfit text-center text-blue-600 mb-2">
+          DocBot📑
+        </h2>
+        <h3 className="text-2xl text-center text-blue-700 font-medium drop-shadow-sm mb-8">
+          Choose your loan type
+        </h3>
+
+        <div className="grid md:grid-cols-3 gap-8 text-center">
+          {loanTypes.map((loan) => (
+            <LoanCard
+              key={loan.name}
+              icon={loan.icon}
+              name={loan.name}
+              description={loan.description}
+            />
+          ))}
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 };
+
 export default UserDashboardComponent;
+

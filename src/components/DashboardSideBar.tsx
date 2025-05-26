@@ -1,24 +1,23 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { LucideIcon, FileText, Menu } from "lucide-react";
+import { FileText, FilePlus2, Menu, Settings, LogOut, X, ClipboardPlus, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, UserButton, useUser,useClerk  } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
-
-interface NavItem {
-  name: string;
-  href: string;
-  icon: LucideIcon;
-  icon3D?: React.ElementType;
-}
 
 const DashboardSidebar = () => {
   const { user } = useUser();
   const pathname = usePathname();
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const clerk = useClerk();
+
+   const handleLogout = () => {
+    clerk.signOut();  // This logs the user out
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,108 +33,183 @@ const DashboardSidebar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const navigationItems: NavItem[] = [
+  const navigationItems = [
+      {
+      name: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      badge: 3
+    },
     {
       name: "Generated Documents",
-      href: "/protected/generated-documents",
-      icon: FileText,
+      href: "/generated-documents",
+      icon: FilePlus2,
+      badge: 3
     },
     {
       name: "My Files",
-      href: "/protected/my-files",
+      href: "/my-files",
       icon: FileText,
+      badge: 12
+    },
+    {
+      name: "Report",
+      href: "/report",
+      icon: ClipboardPlus,
+      badge: 12
+    },
+  ];
+
+  const bottomNavItems = [
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: Settings,
     },
   ];
 
   return (
     <>
-      {/* Hamburger Button - Mobile Only */}
       {isMobile && (
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md md:hidden"
+          className="fixed top-6 left-6 z-50 p-3 bg-white rounded-xl shadow-lg border border-gray-200 md:hidden hover:shadow-xl transition-all duration-200"
         >
-          <Menu className="h-6 w-6 text-gray-800" />
+          {!isSidebarOpen ? <Menu className="h-5 w-5 text-gray-700" />:<X className="h-5 w-5 text-gray-700"/>}
         </button>
       )}
 
-      {/* Sidebar */}
       <div
         className={cn(
-          "bg-white border-r border-gray-200 shadow-sm flex flex-col justify-between w-64 min-h-screen transition-transform duration-300",
+          "bg-gradient-to-b from-blue-600 via-blue-700 to-blue-800 shadow-2xl flex flex-col justify-between w-80 min-h-screen transition-all duration-300 ease-in-out ",
           isMobile
             ? "fixed top-0 left-0 z-40 min-h-screen" +
                 (isSidebarOpen ? " translate-x-0" : " -translate-x-full")
             : "static translate-x-0"
         )}
       >
-        {/* Navigation */}
-        <nav className="py-4">
-          <ul className="space-y-2 px-3 py-10">
-            {navigationItems.map((item) => {
-              const isActive = pathname === item.href;
-              const Icon3D = item.icon3D;
-
-              return (
-                <li key={item.href}>
-                  <Link href={item.href}>
-                    <div
-                      className={cn(
-                        "flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200",
-                        isActive
-                          ? "bg-gray-100 text-gray-900 font-semibold shadow-inner"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                      )}
-                      onClick={() => isMobile && setIsSidebarOpen(false)}
-                    >
-                      {Icon3D ? (
-                        <div
-                          className={cn(
-                            "relative flex items-center justify-center mr-3 w-8 h-8 rounded-md",
-                            isActive
-                              ? "bg-blue-100 text-blue-600"
-                              : "bg-gray-100 text-gray-400"
-                          )}
-                        >
-                          {isActive && (
-                            <div className="absolute inset-0 bg-blue-100 rounded-md opacity-20 animate-pulse" />
-                          )}
-                          <Icon3D
-                            weight={isActive ? "bold" : "regular"}
-                            size={20}
-                            className="z-10 transition-all duration-300"
-                          />
-                        </div>
-                      ) : (
-                        <item.icon
-                          className={cn(
-                            "h-5 w-5 mr-3",
-                            isActive ? "text-blue-600" : "text-gray-400"
-                          )}
-                        />
-                      )}
-                      <span>{item.name}</span>
-                    </div>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* Footer */}
-        <div className="border-t border-gray-200 px-4 py-4">
-          <div className="flex items-center mb-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold">
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </div>
-            <div className="ml-3">
-              <div className="text-sm font-medium text-gray-800">
-                {user?.fullName}
+        <div className="px-6 py-8">
+          <Link href="/dashboard" className="block">
+            <div className="flex items-center space-x-3 mb-8">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-blue-600 font-bold text-xl">📑</span>
               </div>
-              <div className="text-xs text-gray-500">{user?.username}</div>
+              <div>
+                <h1 className="text-white font-bold text-2xl tracking-tight">DocBot</h1>
+                <p className="text-white/90 text-sm font-medium">Manage all your documents</p>
+              </div>
+            </div>
+          </Link>
+
+          <nav>
+            <ul className="space-y-2">
+             {navigationItems.map((item) => {
+  const isActive = pathname === item.href;
+
+  return (
+    <li key={item.href}>
+      <Link href={item.href}>
+        <div
+          className={cn(
+            "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 group relative overflow-hidden",
+            isActive
+              ? "bg-white text-blue-600 shadow-lg transform scale-105"
+              : "text-blue-100 hover:bg-blue-500/50 hover:text-white hover:transform hover:scale-105"
+          )}
+          onClick={() => isMobile && setIsSidebarOpen(false)}
+        >
+          <div className={cn(
+            "absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 transform transition-transform duration-300",
+            isActive ? "translate-x-0" : "-translate-x-full group-hover:translate-x-0"
+          )} />
+          
+          <div className="flex items-center relative z-10">
+            <div className={cn(
+              "p-2 rounded-lg mr-3 transition-all duration-200",
+              isActive
+                ? "bg-blue-100 text-blue-600"
+                : "bg-blue-500/30 text-blue-200 group-hover:bg-blue-400/50 group-hover:text-white"
+            )}>
+              <item.icon className="h-5 w-5" />
+            </div>
+            <span className={cn(
+              "font-medium text-base",
+              isActive ? "text-blue-600" : "text-white"
+            )}>
+              {item.name}
+            </span>
+          </div>
+        </div>
+      </Link>
+    </li>
+  );
+})}
+            </ul>
+          </nav>
+        </div>
+
+        <div className="px-6 pb-8 space-y-4">
+          <nav>
+            <ul className="space-y-2">
+              {bottomNavItems.map((item) => {
+                const isActive = pathname === item.href;
+
+                return (
+                  <li key={item.href}>
+                    <Link href={item.href}>
+                      <div
+                        className={cn(
+                          "flex items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group",
+                          isActive
+                            ? "bg-white text-blue-600 shadow-lg"
+                            : "text-blue-100 hover:bg-blue-500/50 hover:text-white"
+                        )}
+                        onClick={() => isMobile && setIsSidebarOpen(false)}
+                      >
+                        <div className={cn(
+                          "p-2 rounded-lg mr-3 transition-all duration-200",
+                          isActive
+                            ? "bg-blue-100 text-blue-600"
+                            : "bg-blue-500/30 text-blue-200 group-hover:bg-blue-400/50 group-hover:text-white"
+                        )}>
+                          <item.icon className="h-5 w-5" />
+                        </div>
+                        <span className={cn(
+  "text-base font-medium",
+  isActive ? "text-blue-600" : "text-white/90"
+)}>
+  {item.name}
+</span>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          {/* User Profile */}
+          <div className="border-t border-blue-400/20 pt-4">
+            <div className="flex items-center p-4 bg-blue-500/20 rounded-xl border border-blue-400/20 hover:bg-blue-500/30 transition-all duration-200 cursor-pointer">
+              <div className="relative">
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-blue-600 font-bold text-lg shadow-lg ">
+                  <SignedIn>
+                    <UserButton />
+                  </SignedIn>
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-blue-600"></div>
+              </div>
+              <div className="ml-4 flex-1">
+                <div className="text-sm text-white font-bold">
+                  {user?.fullName || "User"}
+                </div>
+                <div className="text-xs text-blue-200 font-medium">
+                  {user?.primaryEmailAddress?.emailAddress || "Professional Plan"}
+                </div>
+              </div>
+              <div className="ml-1 rounded-lg p-2 transition-all duration-200 hover:bg-white/20">
+                <LogOut onClick={handleLogout} className="w-5 h-5 text-blue-200 transition-colors duration-200 cursor-pointer" />
+              </div>
             </div>
           </div>
         </div>
@@ -144,7 +218,7 @@ const DashboardSidebar = () => {
       {/* Mobile Overlay */}
       {isMobile && isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black opacity-50 z-30"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 transition-opacity duration-300"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
