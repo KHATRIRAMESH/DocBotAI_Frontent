@@ -1,8 +1,20 @@
-import { useState, useMemo, Fragment, useEffect, useCallback, memo } from "react";
+import {
+  useState,
+  useMemo,
+  Fragment,
+  useEffect,
+  useCallback,
+  memo,
+} from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { ArrowRight, ChevronLeft, ChevronRight, SendHorizontal } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  SendHorizontal,
+} from "lucide-react";
 import toast from "react-hot-toast";
-import loanFormConfig from "../app/lib/loanConfig.js"
+import loanFormConfig from "../app/lib/loanConfig.js";
 
 const buildInitialData = (steps) => {
   const data = { termsAccepted: false };
@@ -28,15 +40,17 @@ const ProgressHeader = memo(({ step, totalSteps, loanType, onClose }) => {
     <div className="sticky top-0 bg-white z-10 border-b border-gray-200 px-6 py-4">
       {/* Header */}
       <div className="flex items-center justify-center mb-4 relative">
-  <h2 className="text-xl font-bold text-gray-800">Applying for {loanType}</h2>
-  <button
-    onClick={onClose}
-    className="absolute right-0 cursor-pointer text-gray-500 hover:text-gray-700 rounded-full hover:bg-red-300/80 p-1 px-2"
-    aria-label="Close form"
-  >
-    ✕
-  </button>
-</div>
+        <h2 className="text-xl font-bold text-gray-800">
+          Applying for {loanType}
+        </h2>
+        <button
+          onClick={onClose}
+          className="absolute right-0 cursor-pointer text-gray-500 hover:text-gray-700 rounded-full hover:bg-red-300/80 p-1 px-2"
+          aria-label="Close form"
+        >
+          ✕
+        </button>
+      </div>
 
       {/* Show only current step title */}
       <div className="flex justify-center mt-4">
@@ -90,8 +104,7 @@ const ProgressHeader = memo(({ step, totalSteps, loanType, onClose }) => {
       </div>
     </div>
   );
-})
-
+});
 
 const FormInput = memo(({ field, value, onChange }) => {
   if (field.type === "file") {
@@ -133,72 +146,81 @@ const FormInput = memo(({ field, value, onChange }) => {
   );
 });
 
-const StepContent = memo(({ step, loanType, steps, formData, handleChange }) => {
-  if (step === 0) {
-  const docs = loanFormConfig[loanType]?.requiredDocs
-            ?? loanFormConfig[loanType]?.steps
-                 .flat()
-                 .filter(f => f.type === "file")
-                 .map(f => f.label);
+const StepContent = memo(
+  ({ step, loanType, steps, formData, handleChange }) => {
+    if (step === 0) {
+      const docs =
+        loanFormConfig[loanType]?.requiredDocs ??
+        loanFormConfig[loanType]?.steps
+          .flat()
+          .filter((f) => f.type === "file")
+          .map((f) => f.label);
 
-  return (
-    <div className="space-y-6 pt-4">
-      <div className="bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-blue-800 mb-2">Loan Details:</h3>
-        <p className="text-gray-700">
-          {loanFormConfig[loanType]?.description}
-        </p>
-      </div>
+      return (
+        <div className="space-y-6 pt-4">
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-blue-800 mb-2">Loan Details:</h3>
+            <p className="text-gray-700">
+              {loanFormConfig[loanType]?.description}
+            </p>
+          </div>
 
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-gray-800 mb-2">
-         Please prepare the following documents before proceeding:
-        </h3>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-gray-800 mb-2">
+              Please prepare the following documents before proceeding:
+            </h3>
 
-        <ul className="list-disc pl-5 space-y-1">
-          {docs.map((doc, i) => (
-            <li key={i} className="text-gray-700">
-              {doc}
-            </li>
+            <ul className="list-disc pl-5 space-y-1">
+              {docs.map((doc, i) => (
+                <li key={i} className="text-gray-700">
+                  {doc}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    if (step > 0 && step <= steps.length) {
+      const fields = steps[step - 1];
+      return (
+        <div className="space-y-4">
+          {fields.map((f) => (
+            <div key={`field-${f.name}`} className="space-y-1">
+              <label
+                htmlFor={f.name}
+                className="block text-base font-medium text-gray-700"
+              >
+                {f.label}
+              </label>
+              <FormInput
+                field={f}
+                value={formData[f.name]}
+                onChange={handleChange}
+              />
+            </div>
           ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
+        </div>
+      );
+    }
 
-
-  if (step > 0 && step <= steps.length) {
-    const fields = steps[step - 1];
     return (
       <div className="space-y-4">
-        {fields.map((f) => (
-          <div key={`field-${f.name}`} className="space-y-1">
-            <label htmlFor={f.name} className="block text-base font-medium text-gray-700">
-              {f.label}
-            </label>
-            <FormInput field={f} value={formData[f.name]} onChange={handleChange} />
-          </div>
-        ))}
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            name="termsAccepted"
+            checked={formData.termsAccepted}
+            onChange={handleChange}
+            key="terms-checkbox"
+          />
+          I accept the terms & conditions.
+        </label>
       </div>
     );
   }
-
-  return (
-    <div className="space-y-4">
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="termsAccepted"
-          checked={formData.termsAccepted}
-          onChange={handleChange}
-          key="terms-checkbox"
-        />
-        I accept the terms & conditions.
-      </label>
-    </div>
-  );
-});
+);
 
 const MultiStepModal = ({ loanType }) => {
   const { steps, description } = useMemo(() => {
@@ -236,16 +258,16 @@ const MultiStepModal = ({ loanType }) => {
     setFormData(buildInitialData(steps));
   }, [steps]);
 
- const handleChange = useCallback((e) => {
-  const { name, value, type, checked, files } = e.target;
-  const newValue = type === "checkbox" ? checked : files ? files[0] : value;
-  console.log(`Field: ${name}, Value:`, newValue); // Add this line
-  setFormData((prev) => ({
-    ...prev,
-    [name]: newValue,
-  }));
-  console.log("FormData before close:", formData);
-}, []);
+  const handleChange = useCallback((e) => {
+    const { name, value, type, checked, files } = e.target;
+    const newValue = type === "checkbox" ? checked : files ? files[0] : value;
+    console.log(`Field: ${name}, Value:`, newValue); // Add this line
+    setFormData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
+    console.log("FormData before close:", formData);
+  }, []);
 
   // const handleSubmit = (e) => {
   //   e.preventDefault();
@@ -254,57 +276,59 @@ const MultiStepModal = ({ loanType }) => {
   //   closeModal();
   // };
 
-//   const handleSubmit = async (e) => {
-//   e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-//   const formPayload = new FormData();
-//   formPayload.append("loanType", loanType);
+    const formPayload = new FormData();
+    formPayload.append("loanType", loanType);
 
-//   Object.entries(formData).forEach(([key, value]) => {
-//     if (value !== null) {
-//       formPayload.append(key, value);
-//     }
-//   });
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null) {
+        formPayload.append(key, value);
+      }
+    });
+    // console.log(formData);
+    console.log("Submitting", formPayload);
 
-//   try {
-//     const response = await fetch("/api/submit-loan", {
-//       method: "POST",
-//       body: formPayload,
-//     });
+    try {
+      const response = await fetch("http://localhost:5000/api/upload-docs", {
+        method: "POST",
+        body: formPayload,
+      });
 
-//     if (!response.ok) throw new Error("Submission failed");
+      console.log("Response:", response);
 
-//     toast.success("Application submitted!");
-//     closeModal();
-//   } catch (error) {
-//     console.error("Submission error:", error);
-//     toast.error("Failed to submit. Please try again.");
-//   }
-// };
+      if (!response.ok) throw new Error("Submission failed");
 
+      toast.success("Application submitted!");
+      closeModal();
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("Failed to submit. Please try again.");
+    }
+  };
 
-  
-  const [direction, setDirection] = useState('none'); // 'left', 'right', 'none'
+  const [direction, setDirection] = useState("none"); // 'left', 'right', 'none'
 
   const goNext = useCallback(() => {
-    setDirection('left');
+    setDirection("left");
     setTimeout(() => setStep((s) => s + 1), 50);
   }, []);
 
   const goBack = useCallback(() => {
-    setDirection('right');
+    setDirection("right");
     setTimeout(() => setStep((s) => s - 1), 50);
   }, []);
 
   // Reset direction after animation
   useEffect(() => {
-    if (direction !== 'none') {
-      const timer = setTimeout(() => setDirection('none'), 300);
+    if (direction !== "none") {
+      const timer = setTimeout(() => setDirection("none"), 300);
       return () => clearTimeout(timer);
     }
   }, [direction]);
 
- return (
+  return (
     <>
       <button
         onClick={() => {
@@ -345,13 +369,13 @@ const MultiStepModal = ({ loanType }) => {
               >
                 <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
                   <div className="p-6">
-                    <ProgressHeader 
-                      step={step} 
-                      totalSteps={totalSteps} 
+                    <ProgressHeader
+                      step={step}
+                      totalSteps={totalSteps}
                       loanType={loanType}
                       onClose={closeModal}
                     />
-                    
+
                     <form onSubmit={handleSubmit} className="mt-6 space-y-6">
                       <StepContent
                         step={step}
@@ -360,13 +384,13 @@ const MultiStepModal = ({ loanType }) => {
                         formData={formData}
                         handleChange={handleChange}
                       />
-                      
+
                       <div className="flex justify-between pt-4">
                         {step > 0 ? (
                           <button
                             type="button"
                             className="flex items-center gap-1 rounded bg-gray-200 px-4 py-2 text-sm cursor-pointer hover:bg-gray-300"
-                            onClick={() => setStep(s => s - 1)}
+                            onClick={() => setStep((s) => s - 1)}
                           >
                             <ChevronLeft className="h-4 w-4" />
                             Back
@@ -374,13 +398,13 @@ const MultiStepModal = ({ loanType }) => {
                         ) : (
                           <div></div>
                         )}
-                        
+
                         {step < totalSteps ? (
                           <button
                             type="button"
                             disabled={!isStepValid()}
                             className="flex items-center gap-1 rounded bg-blue-600 px-4 py-2 text-sm text-white disabled:opacity-50 cursor-pointer hover:bg-blue-700"
-                            onClick={() => setStep(s => s + 1)}
+                            onClick={() => setStep((s) => s + 1)}
                           >
                             Next
                             <ChevronRight className="h-4 w-4" />
@@ -391,8 +415,7 @@ const MultiStepModal = ({ loanType }) => {
                             disabled={!isStepValid()}
                             className="rounded bg-green-600 px-4 py-2 text-sm text-white disabled:opacity-50 cursor-pointer hover:bg-green-700"
                           >
-                            Submit 
-                           
+                            Submit
                           </button>
                         )}
                       </div>
