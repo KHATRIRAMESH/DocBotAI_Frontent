@@ -236,20 +236,52 @@ const MultiStepModal = ({ loanType }) => {
     setFormData(buildInitialData(steps));
   }, [steps]);
 
-  const handleChange = useCallback((e) => {
-    const { name, value, type, checked, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : files ? files[0] : value
-    }));
-  }, []);
+ const handleChange = useCallback((e) => {
+  const { name, value, type, checked, files } = e.target;
+  const newValue = type === "checkbox" ? checked : files ? files[0] : value;
+  console.log(`Field: ${name}, Value:`, newValue); // Add this line
+  setFormData((prev) => ({
+    ...prev,
+    [name]: newValue,
+  }));
+  console.log("FormData before close:", formData);
+}, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    toast.success("Documents Uploaded!")
-    console.log("Submitting", loanType, formData);
-    closeModal();
-  };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   toast.success("Documents Uploaded!")
+  //   console.log("Submitting", loanType, formData);
+  //   closeModal();
+  // };
+
+//   const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   const formPayload = new FormData();
+//   formPayload.append("loanType", loanType);
+
+//   Object.entries(formData).forEach(([key, value]) => {
+//     if (value !== null) {
+//       formPayload.append(key, value);
+//     }
+//   });
+
+//   try {
+//     const response = await fetch("/api/submit-loan", {
+//       method: "POST",
+//       body: formPayload,
+//     });
+
+//     if (!response.ok) throw new Error("Submission failed");
+
+//     toast.success("Application submitted!");
+//     closeModal();
+//   } catch (error) {
+//     console.error("Submission error:", error);
+//     toast.error("Failed to submit. Please try again.");
+//   }
+// };
+
 
   
   const [direction, setDirection] = useState('none'); // 'left', 'right', 'none'
