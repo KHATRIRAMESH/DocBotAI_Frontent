@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { FileText, FilePlus2, Menu, Settings, LogOut, X, ClipboardPlus, LayoutDashboard } from "lucide-react";
+import { FileText, Menu, Settings, LogOut, X, ClipboardPlus, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SignedIn, UserButton, useUser,useClerk  } from "@clerk/nextjs";
@@ -41,12 +41,6 @@ const DashboardSidebar = () => {
       badge: 3
     },
     {
-      name: "Generated Documents",
-      href: "/generated-documents",
-      icon: FilePlus2,
-      badge: 3
-    },
-    {
       name: "My Files",
       href: "/my-files",
       icon: FileText,
@@ -56,7 +50,7 @@ const DashboardSidebar = () => {
       name: "Report",
       href: "/report",
       icon: ClipboardPlus,
-      badge: 12
+      badge: 12,
     },
   ];
 

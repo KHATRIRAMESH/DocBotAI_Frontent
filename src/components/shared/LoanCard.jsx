@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import MultiStepModal from "../Modal"
+import SinglePageLoanModal from "../SinglePageLoanModal";
 
 const LoanCard = ({ icon, name, description }) => {
   return (
@@ -28,7 +28,8 @@ const LoanCard = ({ icon, name, description }) => {
 
           {/* Apply Button */}
           <div className="mt-6 flex justify-center">
-          <MultiStepModal loanType={name}/>
+          {/* <MultiStepModal loanType={name}/> */}
+          <SinglePageLoanModal loantype={name} />
           </div>
 
         </div>
