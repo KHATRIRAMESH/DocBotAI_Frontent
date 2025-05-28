@@ -5,8 +5,10 @@ import ReactDOM from "react-dom";
 import loanFormConfig from "../app/lib/loan";
 import toast from "react-hot-toast";
 import { BiChevronRight } from "react-icons/bi";
+import { useAuth } from "@clerk/nextjs";
 
 const SinglePageLoanModal = ({ loantype }) => {
+  const { userId } = useAuth();
   const config = loanFormConfig[loantype];
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({ documents: [] }); // Initialize with documents array
@@ -33,12 +35,47 @@ const SinglePageLoanModal = ({ loantype }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const prepareFormData = (data) => {
+    const formPayload = new FormData();
+    formPayload.append("userId", userId); // Add userId to the form data
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "documents" && Array.isArray(value)) {
+        value.forEach((fileObj) => {
+          formPayload.append("documents", fileObj); // assumes it's an array of File
+        });
+      } else {
+        formPayload.append(key, value); // append string fields
+      }
+    });
+
+    return formPayload;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!agreed) {
       toast.error("Please agree to the terms before submitting.");
       return;
     }
+
+    const formPayload = prepareFormData(formData);
+    console.log("Form Data to be submitted:", formPayload);
+    try {
+      const response = await fetch("http://localhost:8000/api/upload-docs", {
+        method: "POST",
+        body: formPayload,
+      });
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      const result = await response.json();
+      console.log("Success:", result);
+    } catch (err) {
+      console.error("Error:", err);
+    }
+
     console.log("Submitted Data:", formData);
     toast.success("Application submitted!");
     setIsOpen(false);
@@ -93,18 +130,21 @@ const SinglePageLoanModal = ({ loantype }) => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-transparent rounded-lg bg-opacity-60 backdrop-blur-sm px-4 py-6"
     >
       <div className="scrollbar-hidden bg-white rounded-lg p-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-lg">
-     <div className="relative mb-6 flex flex-col items-center">
-  <h2 className="text-3xl font-bold text-blue-700 mb-2">{loantype} Application</h2>
-  <p className="text-gray-700 text-lg text-center max-w-xl">{config.description}</p>
+        <div className="relative mb-6 flex flex-col items-center">
+          <h2 className="text-3xl font-bold text-blue-700 mb-2">
+            {loantype} Application
+          </h2>
+          <p className="text-gray-700 text-lg text-center max-w-xl">
+            {config.description}
+          </p>
 
-  <button
-    onClick={() => setIsOpen(false)}
-    className="absolute top-0 right-0 text-blue-700 p-1 px-3 rounded-full hover:bg-red-500/60 hover:text-gray-800 text-3xl font-bold cursor-pointer transition-all duration-300"
-  >
-    &times;
-  </button>
-</div>
-      
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute top-0 right-0 text-blue-700 p-1 px-3 rounded-full hover:bg-red-500/60 hover:text-gray-800 text-3xl font-bold cursor-pointer transition-all duration-300"
+          >
+            &times;
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit}>
           {renderFields(config.personalInfo, "Personal Information")}
@@ -114,7 +154,6 @@ const SinglePageLoanModal = ({ loantype }) => {
           {renderFields(config.bankDetails, "Bank Details")}
           <hr className="my-6 border-2 border-gray-300  rounded-xl" />
           {renderFields(config.documents, "Upload Documents")}
-
 
           <div className="flex items-center mb-6 mt-4">
             <input
@@ -143,10 +182,10 @@ const SinglePageLoanModal = ({ loantype }) => {
   return (
     <>
       <button
-       onClick={() => {
-    setIsOpen(true);
-    setFormData((prev) => ({ ...prev, loanType: loantype }));
-  }}
+        onClick={() => {
+          setIsOpen(true);
+          setFormData((prev) => ({ ...prev, loanType: loantype }));
+        }}
         className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer"
       >
         Apply Now
@@ -154,7 +193,10 @@ const SinglePageLoanModal = ({ loantype }) => {
       </button>
 
       {isOpen && typeof window !== "undefined"
-        ? ReactDOM.createPortal(modalContent, document.getElementById("modal-root"))
+        ? ReactDOM.createPortal(
+            modalContent,
+            document.getElementById("modal-root")
+          )
         : null}
     </>
   );
