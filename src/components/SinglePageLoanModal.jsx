@@ -71,14 +71,16 @@ const SinglePageLoanModal = ({ loantype }) => {
       if (!response.ok) throw new Error("Upload failed");
 
       const result = await response.json();
-      console.log("Success:", result);
+      console.log("Response from server:", result);
+      toast.success("Application submitted!");
     } catch (err) {
       console.error("Error:", err);
+      toast.error("Failed to submit application. Please try again.");
+    } finally {
+      setFormData({ documents: [] }); // Reset documents array
+      setAgreed(false); // Reset agreement checkbox
+      setIsOpen(false);
     }
-
-    console.log("Submitted Data:", formData);
-    toast.success("Application submitted!");
-    setIsOpen(false);
   };
 
   const renderFields = (fields, title) => (
