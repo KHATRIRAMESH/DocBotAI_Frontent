@@ -63,13 +63,10 @@ const SinglePageLoanModal = ({ loantype }) => {
     const formPayload = prepareFormData(formData);
     console.log("Form Data to be submitted:", formPayload);
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/admin-verify/upload",
-        {
-          method: "POST",
-          body: formPayload,
-        }
-      );
+      const response = await fetch("http://localhost:8000/api/upload-docs", {
+        method: "POST",
+        body: formPayload,
+      });
 
       if (!response.ok) throw new Error("Upload failed");
 
