@@ -2,7 +2,7 @@
 
 import Header from "@/components/shared/Header";
 import { useAuth } from "@clerk/nextjs";
-import Image from "next/image";
+// import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -21,8 +21,9 @@ export default function Home() {
             Get Your Loan Approved — <br /> Fast, Secure & Hassle-Free
           </h1>
           <p className="mt-8 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed tracking-wide">
-            Experience real-time loan application with live document verification and instant updates.
-            Whether it’s personal, home, or education — we’ve got you covered.
+            Experience real-time loan application with live document
+            verification and instant updates. Whether it’s personal, home, or
+            education — we’ve got you covered.
           </p>
           <div className="mt-12 flex justify-center gap-6">
             <a
@@ -65,7 +66,9 @@ export default function Home() {
                 className="bg-gradient-to-br from-blue-50 to-white rounded-xl p-8 shadow-md hover:shadow-lg transition"
               >
                 <div className="text-5xl mb-4">{icon}</div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">{title}</h3>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                  {title}
+                </h3>
                 <p className="text-gray-600">{desc}</p>
               </div>
             ))}
@@ -104,7 +107,9 @@ export default function Home() {
                   className={`bg-gradient-to-br ${color} rounded-xl shadow-lg p-8 cursor-pointer hover:shadow-2xl transition`}
                 >
                   <div className="text-6xl mb-4">{icon}</div>
-                  <h4 className="text-2xl font-semibold mb-3 text-gray-900">{title}</h4>
+                  <h4 className="text-2xl font-semibold mb-3 text-gray-900">
+                    {title}
+                  </h4>
                   <p className="text-gray-700 leading-relaxed">{desc}</p>
                 </div>
               ))}
@@ -124,37 +129,38 @@ export default function Home() {
                 role: "Entrepreneur",
                 feedback:
                   "DocBot made my home loan application so easy and quick. Highly recommend their hassle-free process!",
-                avatar:
-                  "https://randomuser.me/api/portraits/women/68.jpg",
+                avatar: "https://randomuser.me/api/portraits/women/68.jpg",
               },
               {
                 name: "John Smith",
                 role: "Student",
                 feedback:
                   "Thanks to DocBot, I secured an education loan fast with all my documents verified in real-time.",
-                avatar:
-                  "https://randomuser.me/api/portraits/men/45.jpg",
+                avatar: "https://randomuser.me/api/portraits/men/45.jpg",
               },
               {
                 name: "Mary Johnson",
                 role: "Freelancer",
                 feedback:
                   "The personal loan process was smooth, secure, and transparent. DocBot truly cares about their users.",
-                avatar:
-                  "https://randomuser.me/api/portraits/women/45.jpg",
+                avatar: "https://randomuser.me/api/portraits/women/45.jpg",
               },
-            ].map(({ name, role, feedback, avatar }) => (
+            ].map(({ name, role, feedback }) => (
               <div
                 key={name}
                 className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center hover:shadow-2xl transition"
               >
-                <Image
+                {/* <Image
+                  width={80}
+                  height={80}
                   src={avatar}
                   alt={name}
                   className="w-20 h-20 rounded-full mb-6 ring-4 ring-blue-300"
                   loading="lazy"
-                />
-                <p className="text-gray-700 italic mb-6">&apos;{feedback}&apos;</p>
+                /> */}
+                <p className="text-gray-700 italic mb-6">
+                  &apos;{feedback}&apos;
+                </p>
                 <h5 className="font-semibold text-gray-900">{name}</h5>
                 <span className="text-blue-600 text-sm">{role}</span>
               </div>

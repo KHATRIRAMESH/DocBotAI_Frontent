@@ -304,7 +304,7 @@ const [comment, setComment] = useState("");
   );
 }
 
-export function ResendModal({ onClose, onSend, comment, setComment }) {
+ function ResendModal({ onClose, onSend, comment, setComment }) {
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">

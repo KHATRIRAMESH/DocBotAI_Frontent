@@ -11,10 +11,11 @@ const Dashboard = () => {
   const [role, setRole] = useState("user");
   const router = useRouter();
 
-  // console.log("User ID:", userId);
-  // console.log("Session ID:", sessionId);
-  // console.log("Token:", getToken);
-  console.log("isSignedIn:", isSignedIn); 
+  setRole("user");
+  console.log("User ID:", userId);
+  console.log("Session ID:", sessionId);
+  console.log("Token:", getToken);
+  console.log("isSignedIn:", isSignedIn);
 
   if (!isLoaded) {
     return <div>Loading...</div>;

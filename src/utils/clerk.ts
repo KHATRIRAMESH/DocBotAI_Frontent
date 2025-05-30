@@ -2,10 +2,10 @@
 
 import { useAuth } from "@clerk/nextjs";
 
-export async function getClerkToken(): Promise<string | null> {
+export function GetClerkToken(): Promise<string | null> {
   const { getToken } = useAuth();
-  const token = await getToken();
+  const token = getToken();
   console.log("Clerk token:", token);
 
-  return await getToken();
+  return getToken();
 }
