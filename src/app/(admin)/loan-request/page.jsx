@@ -352,9 +352,13 @@ const [comment, setComment] = useState("");
   );
 }
 
-export default function LoanRequestsPage({ loans = dummyLoans }) {
+// Main page component - removed loans prop parameter
+export default function LoanRequestsPage() {
   const [filter, setFilter] = useState("all");
   const [openLoan, setOpenLoan] = useState(null);
+
+  // Use dummyLoans directly instead of accepting it as a prop
+  const loans = dummyLoans;
 
   const filtered = useMemo(() => {
     if (filter === "all") return loans;

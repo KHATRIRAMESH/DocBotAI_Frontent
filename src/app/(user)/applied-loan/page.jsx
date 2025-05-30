@@ -188,7 +188,8 @@ const userLoans = [
 ];
 
 /* ─── main page ───────────────────────────── */
-export default function MyLoansPage({ loans = userLoans }) {
+export default function MyLoansPage() {
+  const loans = userLoans
   const [filter, setFilter] = useState("all");
   const [openLoan, setOpenLoan] = useState(null);
 

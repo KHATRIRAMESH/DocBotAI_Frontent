@@ -90,3 +90,54 @@ export const statusStyles = {
     label: "Not reviewed",
   },
 };
+
+export const reports = [
+  {
+    loanCode: "HRL-001",
+    title: "Home Renovation Loan",
+    description: "Request for funds to renovate kitchen and bathroom.",
+    submittedAt: "2025-05-20T09:15:00Z",
+    reviewedAt: "2025-05-23T14:45:00Z",
+    status: "Accepted",
+  },
+  {
+    loanCode: "EDL-002",
+    title: "Education Loan",
+    description: "Loan application to cover university tuition fees.",
+    submittedAt: "2025-05-25T11:30:00Z",
+    reviewedAt: null,
+    status: "New",
+  },
+  {
+    loanCode: "SBL-003",
+    title: "Small Business Loan",
+    description: "Loan for startup inventory and marketing expenses.",
+    submittedAt: "2025-05-22T13:00:00Z",
+    reviewedAt: null,
+    status: "In Review",
+  },
+  {
+    loanCode: "CPL-004",
+    title: "Car Purchase Loan",
+    description: "Finance needed for buying a used car.",
+    submittedAt: "2025-05-21T10:00:00Z",
+    reviewedAt: "2025-05-24T09:00:00Z",
+    status: "Accepted",
+  },
+  {
+    loanCode: "MEL-005",
+    title: "Medical Emergency Loan",
+    description: "Urgent loan to cover unexpected medical expenses.",
+    submittedAt: "2025-05-27T08:45:00Z",
+    reviewedAt: null,
+    status: "New",
+  },
+  {
+    loanCode: "WDL-006",
+    title: "Wedding Loan",
+    description: "Loan to cover wedding venue and catering costs.",
+    submittedAt: "2025-05-23T16:20:00Z",
+    reviewedAt: null,
+    status: "In Review",
+  },
+];
