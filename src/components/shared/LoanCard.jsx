@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import SinglePageLoanModal from "../SinglePageLoanModal";
+import SinglePageLoanModal from "../user/SinglePageLoanModal";
 
 const LoanCard = ({ icon, name, description }) => {
   return (
@@ -9,7 +9,8 @@ const LoanCard = ({ icon, name, description }) => {
       {/* Outer shell */}
       <div className="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-xl p-2 transition hover:scale-[1.02] duration-300 ease-in-out">
         {/* Inner Card */}
-        <div className="rounded-3xl bg-white p-10 min-h-[250px] flex flex-col justify-between backdrop-blur-sm border-3 border-gray-400 hover:border-blue-600 duration-300 cursor-pointer">
+      <div className="bg-white rounded-xl border-3 shadow p-6 flex flex-col justify-between min-h-[260px] hover:shadow-lg transition hover:border-blue-500  cursor-pointer">
+
           
           <div>
             {/* Title */}

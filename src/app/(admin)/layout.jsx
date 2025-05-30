@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardSidebar from "@/components/DashboardSideBar";
+import AdminDashboardSideBar from "../../components/admin/AdminDashboardComponent";
 import { useUser } from "@clerk/nextjs";
 
 export default function DashboardLayout({
@@ -11,8 +11,8 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">   
-      <aside className="w-80 shrink-0">         
-        <DashboardSidebar />
+      <aside className="shrink-0">         
+        <AdminDashboardSideBar />
       </aside>
 
       {/* ----- Page content ----- */}

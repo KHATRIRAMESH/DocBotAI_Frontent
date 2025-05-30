@@ -1,4 +1,22 @@
-const loanFormConfig = {
+import {
+  AiOutlineCheckCircle,
+  AiOutlineClockCircle,
+  AiOutlineHourglass,
+  AiOutlineCloseCircle,
+} from "react-icons/ai";
+
+import {
+  FaHome,
+  FaGraduationCap,
+  FaMoneyCheckAlt,
+  FaCar,
+  FaUser,
+  FaBriefcase,
+  FaHeartbeat,
+} from "react-icons/fa";
+
+
+export const loanFormConfig = {
   "Home Loan": {
     description: "Competitive rates and flexible terms for your dream home.",
     requiredDocs: [
@@ -218,4 +236,168 @@ const loanFormConfig = {
   },
 };
 
-export default loanFormConfig;
+export const STATUS_META = {
+  approved: {
+    label: "Approved",
+    text: "text-green-700",
+    bg: "bg-green-100",
+    icon: AiOutlineCheckCircle,
+  },
+  pending: {
+    label: "Pending",
+    text: "text-yellow-800",
+    bg: "bg-yellow-100",
+    icon: AiOutlineHourglass,
+  },
+  in_review: {
+    label: "In Review",
+    text: "text-blue-700",
+    bg: "bg-blue-100",
+    icon: AiOutlineClockCircle,
+  },
+  new_application: {
+    label: "New Application",
+    text: "text-white/90",
+    bg: "bg-purple-400",
+    icon: AiOutlineCloseCircle,
+  },
+};
+
+export const TITLE_ICONS = {
+  "Home Loan": FaHome,
+  "Education Loan": FaGraduationCap,
+  "Car Loan": FaCar,
+  "Personal Loan": FaUser,
+  "Business Loan": FaBriefcase,
+  "Medical Loan": FaHeartbeat,
+  default: FaMoneyCheckAlt,
+};
+
+export const sampleData = {
+  1: {
+    fullName: "John Doe",
+    email: "john.doe@email.com",
+    phone: "+977-9812345678",
+    citizenshipNumber: "12345678901234",
+    dob: "1990-05-15",
+    permanentAddress: "Kathmandu, Nepal",
+    currentAddress: "Lalitpur, Nepal",
+    bankName: "Nepal Investment Bank",
+    accountNumber: "1234567890123456",
+    courseFee: "500000",
+    familyIncome: "80000",
+    documents: {
+      citizenshipDoc: "citizenship_john_doe.pdf",
+      admissionLetter: "admission_letter_tribhuvan.pdf",
+      academicTranscripts: "transcripts_bachelor.pdf",
+      bankStatement: "bank_statement_6months.pdf",
+      passportPhoto: "passport_photo_john.jpg",
+    }
+  },
+  2: {
+    fullName: "Jane Smith",
+    email: "jane.smith@email.com",
+    phone: "+977-9823456789",
+    citizenshipNumber: "23456789012345",
+    dob: "1985-08-22",
+    permanentAddress: "Pokhara, Nepal",
+    currentAddress: "Kathmandu, Nepal",
+    bankName: "Standard Chartered Bank",
+    accountNumber: "2345678901234567",
+    monthlyIncome: "120000",
+    documents: {
+      citizenshipDoc: "citizenship_jane_smith.pdf",
+      quotationDoc: "home_renovation_quote.pdf",
+      salarySlip: "salary_slip_jane.pdf",
+      bankStatement: "bank_statement_6months_jane.pdf",
+      passportPhoto: "passport_photo_jane.jpg",
+    }
+  },
+  3: {
+    fullName: "Ram Sharma",
+    email: "ram.sharma@email.com",
+    phone: "+977-9834567890",
+    citizenshipNumber: "34567890123456",
+    dob: "1988-12-10",
+    permanentAddress: "Bhaktapur, Nepal",
+    currentAddress: "Kathmandu, Nepal",
+    bankName: "Nabil Bank",
+    accountNumber: "3456789012345678",
+    monthlyIncome: "95000",
+    loanAmount: "200000",
+    documents: {
+      citizenshipDoc: "citizenship_ram_sharma.pdf",
+      salarySlip: "salary_slip_ram.pdf",
+      bankStatement: "bank_statement_6months_ram.pdf",
+      employmentLetter: "employment_letter_ram.pdf",
+      passportPhoto: "passport_photo_ram.jpg",
+    }
+  },
+  4: {
+    businessName: "Sweet Dreams Bakery",
+    ownerName: "Sita Gurung",
+    email: "sita.gurung@sweetdreams.com",
+    phone: "+977-9845678901",
+    businessType: "Food & Beverage",
+    businessAddress: "Thamel, Kathmandu",
+    ownerAddress: "Baneshwor, Kathmandu",
+    bankName: "Himalayan Bank",
+    accountNumber: "4567890123456789",
+    monthlyRevenue: "300000",
+    loanAmount: "1500000",
+    documents: {
+      businessRegistration: "business_registration_sweet_dreams.pdf",
+      financialStatements: "financial_statements_2023.pdf",
+      taxReturns: "tax_returns_2023.pdf",
+      bankStatement: "bank_statement_12months_business.pdf",
+      businessPlan: "expansion_business_plan.pdf",
+    }
+  }
+};
+
+export const FILTERS = [
+  { value: "all", label: "All" },
+  { value: "new_application", label: "New Application" },
+  { value: "approved", label: "Approved" },
+  { value: "pending", label: "Pending" },
+  { value: "in_review", label: "In Review" },
+];
+
+export const dummyLoans = [
+  {
+    id: 1,
+    userId: 101,
+    title: "Education Loan",
+    description: "Loan to cover university tuition and books for Computer Science degree at Tribhuvan University.",
+    status: "approved",
+    receivedAt: new Date("2024-05-15").toISOString(),
+    reviewedAt: new Date("2024-05-20").toISOString(),
+  },
+  {
+    id: 2,
+    userId: 102,
+    title: "Home Loan",
+    description: "Funds for renovating kitchen and bathroom in family home.",
+    status: "in_review",
+    receivedAt: new Date("2024-05-28").toISOString(),
+    reviewedAt: null,
+  },
+  {
+    id: 3,
+    userId: 103,
+    title: "Personal Loan",
+    description: "Short-term loan for medical expenses and emergency costs.",
+    status: "pending",
+    receivedAt: new Date("2024-05-29").toISOString(),
+    reviewedAt: null,
+  },
+  {
+    id: 4,
+    userId: 104,
+    title: "Business Loan",
+    description: "Capital to expand a local bakery and purchase new equipment.",
+    status: "new_application",
+    receivedAt: new Date("2024-05-30").toISOString(),
+    reviewedAt: null,
+  },
+];

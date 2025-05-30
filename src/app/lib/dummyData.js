@@ -76,7 +76,7 @@ export const reports = [
   },
   {
     title: "Personal Loan Application",
-    status: "Accepted",
+    status: "Rejected",
     submittedAt: "2025-04-28T13:50:00Z",
     reviewedAt: "2025-04-28T14:05:00Z",
     description:

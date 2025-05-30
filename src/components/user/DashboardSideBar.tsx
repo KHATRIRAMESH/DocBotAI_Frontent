@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { FileText, Menu, Settings, LogOut, X, ClipboardPlus, LayoutDashboard } from "lucide-react";
+import { FileText, Menu, Settings, LogOut, X, ClipboardPlus, LayoutDashboard, Headset } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SignedIn, UserButton, useUser,useClerk  } from "@clerk/nextjs";
@@ -16,7 +16,7 @@ const DashboardSidebar = () => {
   const clerk = useClerk();
 
    const handleLogout = () => {
-    clerk.signOut();  // This logs the user out
+    clerk.signOut(); 
   };
 
   useEffect(() => {
@@ -47,6 +47,12 @@ const DashboardSidebar = () => {
       badge: 12
     },
     {
+      name: "Applied Loans",
+      href: "/applied-loan",
+      icon: FileText,
+      badge: 12
+    },
+    {
       name: "Report",
       href: "/report",
       icon: ClipboardPlus,
@@ -55,6 +61,11 @@ const DashboardSidebar = () => {
   ];
 
   const bottomNavItems = [
+    {
+      name: "Support",
+      href: "/help",
+      icon: Headset ,
+    },
     {
       name: "Settings",
       href: "/settings",
@@ -94,6 +105,8 @@ const DashboardSidebar = () => {
               </div>
             </div>
           </Link>
+
+          <h1 className="text-white/90 text-xs uppercase  mb-1">Menu</h1>
 
           <nav>
             <ul className="space-y-2">
@@ -144,11 +157,14 @@ const DashboardSidebar = () => {
 
         <div className="px-6 pb-8 space-y-4">
           <nav>
+                      <h1 className="text-white/90 text-xs uppercase mb-1">General</h1>
+
             <ul className="space-y-2">
               {bottomNavItems.map((item) => {
                 const isActive = pathname === item.href;
 
                 return (
+                  
                   <li key={item.href}>
                     <Link href={item.href}>
                       <div

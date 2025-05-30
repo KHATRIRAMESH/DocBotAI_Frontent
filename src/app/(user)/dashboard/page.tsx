@@ -1,7 +1,7 @@
 "use client";
 
-import AdminDashboardComponent from "@/components/AdminDashboardComponent";
-import UserDashboardComponent from "@/components/UserDashboardComponent";
+import AdminDashboardComponent from "@/components/admin/AdminDashboardComponent";
+import UserDashboardComponent from "@/components/user/UserDashboardComponent";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

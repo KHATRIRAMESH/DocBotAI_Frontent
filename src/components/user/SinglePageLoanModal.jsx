@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import loanFormConfig from "../app/lib/loan";
+import {loanFormConfig} from "../../app/lib/loan";
 import toast from "react-hot-toast";
 import { BiChevronRight } from "react-icons/bi";
 import { useAuth } from "@clerk/nextjs";

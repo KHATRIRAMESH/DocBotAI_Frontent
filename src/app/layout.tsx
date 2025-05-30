@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono,Outfit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Head from "next/head";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DocBot",
+  title: "DocBot - AI Powered Docs",
   description: "Your AI-powered document assistant",
 };
 
@@ -34,6 +35,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={outfit.className}>
+        <Head>
+          <link rel="icon" href="/favicon.ico" />
+          {/* Optional: other meta tags or title */}
+        </Head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >

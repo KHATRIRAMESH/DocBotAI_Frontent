@@ -1,5 +1,5 @@
 import { Building2, CarFront, GraduationCap, Handshake, HeartPulse, HousePlus } from "lucide-react";
-import LoanCard from "./shared/LoanCard"
+import LoanCard from "../shared/LoanCard"
 const loanTypes = [
   {
     name: "Home Loan",
@@ -45,16 +45,17 @@ const UserDashboardComponent = () => {
           Choose your loan type
         </h3>
 
-        <div className="grid md:grid-cols-3 gap-8 text-center">
-          {loanTypes.map((loan) => (
-            <LoanCard
-              key={loan.name}
-              icon={loan.icon}
-              name={loan.name}
-              description={loan.description}
-            />
-          ))}
-        </div>
+       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 text-center">
+  {loanTypes.map((loan) => (
+    <LoanCard
+      key={loan.name}
+      icon={loan.icon}
+      name={loan.name}
+      description={loan.description}
+    />
+  ))}
+</div>
+
       </div>
     </section>
   );
