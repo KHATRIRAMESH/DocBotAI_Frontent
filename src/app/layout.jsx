@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono,Outfit } from "next/font/google";
 import "./globals.css";
@@ -22,16 +22,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "DocBot - AI Powered Docs",
-  description: "Your AI-powered document assistant",
-};
+// export const metadata: Metadata = {
+//   title: "DocBot - AI Powered Docs",
+//   description: "Your AI-powered document assistant",
+// };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}) {
   return (
     <ClerkProvider>
       <html lang="en" className={outfit.className}>
