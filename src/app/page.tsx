@@ -1,16 +1,25 @@
 "use client";
 
 import Header from "@/components/shared/Header";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 // import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
   const { isSignedIn } = useAuth();
-  if (isSignedIn) {
-    router.push("/dashboard");
-  }
+  const {user,isLoaded} = useUser()
+    useEffect(() => {
+    if (isSignedIn&& isLoaded && user) {
+      const role = user.publicMetadata.role;
+      if (role === "admin") {
+        router.push("/home");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+  }, [isLoaded, user]);
   return (
     <>
       <Header />
