@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import {loanFormConfig} from "../../app/lib/loan";
+import { loanFormConfig } from "../../app/lib/loan";
 import toast from "react-hot-toast";
 import { BiChevronRight } from "react-icons/bi";
 import { useAuth } from "@clerk/nextjs";
+import { socket } from "@/utils/socket"; // Ensure this path is correct
 
 const SinglePageLoanModal = ({ loantype }) => {
   const { userId } = useAuth();
@@ -63,16 +64,25 @@ const SinglePageLoanModal = ({ loantype }) => {
     const formPayload = prepareFormData(formData);
     console.log("Form Data to be submitted:", formPayload);
     try {
-      const response = await fetch("http://localhost:8000/api/upload-docs", {
-        method: "POST",
-        body: formPayload,
-      });
+      const response = await fetch(
+        "http://localhost:8000/api/admin-verify/upload",
+        {
+          method: "POST",
+          body: formPayload,
+        }
+      );
 
       if (!response.ok) throw new Error("Upload failed");
 
       const result = await response.json();
       console.log("Response from server:", result);
       toast.success("Application submitted!");
+
+      socket.emit("document-submitted", {
+        result,
+      });
+
+      console.log("Socket event emitted for document submission");
     } catch (err) {
       console.error("Error:", err);
       toast.error("Failed to submit application. Please try again.");

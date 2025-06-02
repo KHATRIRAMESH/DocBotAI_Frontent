@@ -45,7 +45,7 @@ export const loanFormConfig = {
     ],
     documents: [
       { name: "citizenshipDoc", label: "Citizenship Certificate", type: "file" },
-      // { name: "quotationDoc", label: "Quotation / Pro-forma Invoice", type: "file" },
+      { name: "quotationDoc", label: "Quotation / Pro-forma Invoice", type: "file" },
       // { name: "salarySlip", label: "Salary Slip or Income Proof", type: "file" },
       // { name: "bankStatement", label: "Bank Statement (6 months)", type: "file" },
       // { name: "passportPhoto", label: "Passport-Size Photo", type: "file" },
