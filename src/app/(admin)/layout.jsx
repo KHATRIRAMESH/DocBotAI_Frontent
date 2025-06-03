@@ -3,36 +3,11 @@
 import { useEffect, useState } from "react";
 import AdminDashboardSideBar from "../../components/admin/AdminDashboardComponent";
 import { useUser } from "@clerk/nextjs";
-import { socket } from "@/utils/socket"; // Ensure this path is correct
+// import { socket } from "@/utils/socket"; // Ensure this path is correct
 
 export default function DashboardLayout({ children }) {
   const { user } = useUser();
   console.log(user?.primaryEmailAddress?.emailAddress);
-  const [room, setRoom] = useState("");
-
-  useEffect(() => {
-    socket.on("new-document-submission", ({ userId, documentId, fileURL }) => {
-      setRoom(userId);
-      console.log("New document submitted:", {
-        userId,
-        documentId,
-        fileURL,
-      });
-      socket.emit("join-admin-to-user-room", {
-        room,
-      });
-
-      // You can update state or show a notification here
-    });
-    socket.on("reUpload", ({ userId, documentId }) => {
-      console.log(`User ${userId} reuploaded ${documentId}`);
-    });
-
-    return () => {
-      socket.off("documentSubmitted");
-      socket.off("reUpload");
-    };
-  }, []);
 
   return (
     <div className="flex min-h-screen">

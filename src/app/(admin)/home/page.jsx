@@ -5,6 +5,7 @@ import { FaSearch, FaUserCircle } from "react-icons/fa";
 import { ChartLine, CircleFadingPlus } from "lucide-react";
 import { seedLoans, statusStyles, ranges } from "../../lib/adminData";
 import { socket } from "@/utils/socket.js";
+import { useAuth } from "@clerk/nextjs";
 
 const Dashboard = () => {
   const [loans] = useState(seedLoans);
@@ -13,24 +14,20 @@ const Dashboard = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [showSearchDD, setShowSearchDD] = useState(false);
   const searchBox = useRef(null);
+  const { userId } = useAuth();
+  console.log("User ID:", userId);
 
   useEffect(() => {
-    socket.emit("join-admin-to-user-room", {});
-    socket.on("new-document-submission", ({ userId, documentId, fileURL }) => {
-      console.log("New document submitted:", {
-        userId,
-        documentId,
-        fileURL,
-      });
-
-      // You can update state or show a notification here
+    socket.emit("join-admin-room");
+    socket.on("new-document-submission", (data) => {
+      console.log("New document submitted:", data); // You can update state or show a notification here
     });
     socket.on("reUpload", ({ userId, documentId }) => {
       console.log(`User ${userId} reuploaded ${documentId}`);
     });
 
     return () => {
-      socket.off("documentSubmitted");
+      socket.off("new-document-submission");
       socket.off("reUpload");
     };
   }, []);
