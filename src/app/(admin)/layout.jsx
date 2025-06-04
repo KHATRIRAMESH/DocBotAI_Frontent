@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs";
 
 export default function DashboardLayout({ children }) {
   const { user } = useUser();
-  console.log(user?.primaryEmailAddress?.emailAddress);
+  // console.log(user?.primaryEmailAddress?.emailAddress);
 
   return (
     <div className="flex min-h-screen">

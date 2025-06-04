@@ -63,7 +63,7 @@ const SinglePageLoanModal = ({ loantype }) => {
     const formPayload = prepareFormData(formData);
     console.log("Form Data to be submitted:", formPayload);
     try {
-      const response = await fetch("http://localhost:8000/api/upload-docs", {
+      const response = await fetch("http://localhost:5000/api/upload-docs", {
         method: "POST",
         body: formPayload,
       });
@@ -77,8 +77,8 @@ const SinglePageLoanModal = ({ loantype }) => {
       console.error("Error:", err);
       toast.error("Failed to submit application. Please try again.");
     } finally {
-      setFormData({ documents: [] }); // Reset documents array
-      setAgreed(false); // Reset agreement checkbox
+      setFormData({ documents: [] });
+      setAgreed(false); 
       setIsOpen(false);
     }
   };
@@ -93,7 +93,6 @@ const SinglePageLoanModal = ({ loantype }) => {
               {label}
             </label>
 
-            {/* File input styled with gray background */}
             {type === "file" ? (
               <input
                 type={type}
