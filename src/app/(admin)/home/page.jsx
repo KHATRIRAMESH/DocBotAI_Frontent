@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useContext } from "react";
 import { FaSearch, FaUserCircle } from "react-icons/fa";
 import { ChartLine, CircleFadingPlus } from "lucide-react";
 import { seedLoans, statusStyles, ranges } from "../../lib/adminData";
-import { socket } from "@/utils/socket.js";
-import { useAuth } from "@clerk/nextjs";
+import { RequestContext } from "../../../context/requestContext.js";
 
 const Dashboard = () => {
   const [loans] = useState(seedLoans);
@@ -14,23 +13,8 @@ const Dashboard = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [showSearchDD, setShowSearchDD] = useState(false);
   const searchBox = useRef(null);
-  const { userId } = useAuth();
-  console.log("User ID:", userId);
-
-  useEffect(() => {
-    socket.emit("join-admin-room");
-    socket.on("new-document-submission", (data) => {
-      console.log("New document submitted:", data); // You can update state or show a notification here
-    });
-    socket.on("reUpload", ({ userId, documentId }) => {
-      console.log(`User ${userId} reuploaded ${documentId}`);
-    });
-
-    return () => {
-      socket.off("new-document-submission");
-      socket.off("reUpload");
-    };
-  }, []);
+  const { loanRequest } = useContext(RequestContext);
+  console.log("Current request in Dashboard:", loanRequest);
 
   useEffect(() => {
     const handler = (e) => {
