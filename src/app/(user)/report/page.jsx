@@ -3,6 +3,7 @@
 import { FaCircleExclamation } from "react-icons/fa6";
 import { reports } from "../../lib/dummyData";
 import { SiTicktick } from "react-icons/si";
+import UserRoute from "@/components/auth/UserRoute";
 
 // Utility function
 const fmt = (iso) =>
@@ -12,6 +13,8 @@ const fmt = (iso) =>
   });
 
 const LoanReportPage = () => (
+  <UserRoute>
+
   <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
     <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-blue-500 text-center">
       Loan Application Reports
@@ -20,9 +23,9 @@ const LoanReportPage = () => (
     <div className="no-scrollbar overflow-y-auto max-h-[75vh] space-y-4 sm:space-y-6 pr-1">
       {reports.map((r, i) => (
         <div
-          key={i}
-          className={`rounded-xl p-4 sm:p-5 shadow-md border-l-8 ${
-            r.status === "Accepted"
+        key={i}
+        className={`rounded-xl p-4 sm:p-5 shadow-md border-l-8 ${
+          r.status === "Accepted"
               ? "border-green-600 bg-green-50"
               : "border-red-600 bg-red-50"
           }`}
@@ -63,6 +66,7 @@ const LoanReportPage = () => (
       ))}
     </div>
   </div>
+      </UserRoute>
 );
 
 export default LoanReportPage;

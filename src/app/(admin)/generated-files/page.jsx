@@ -11,6 +11,7 @@ import {
 import { FaEdit, FaFilePdf } from "react-icons/fa";
 import { HiDownload } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
+import AdminRoute from "@/components/auth/AdminRoute";
 
 /* ── DUMMY DATA ──────────────────────────────────────── */
 const dummyData = [
@@ -176,6 +177,7 @@ export default function MyFilesSection() {
 
   /* ─ UI ─ */
   return (
+    <AdminRoute>
     <div className="mx-auto max-w-4xl p-6 space-y-6">
       <h1 className="text-3xl font-bold">My Files</h1>
 
@@ -379,5 +381,6 @@ export default function MyFilesSection() {
         </div>
       )}
     </div>
+    </AdminRoute>
   );
 }

@@ -6,7 +6,6 @@ import { socket } from "@/utils/socket";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-// import { useState } from "react";
 
 const Dashboard = () => {
   const { isLoaded, isSignedIn, userId, sessionId, getToken } = useAuth();

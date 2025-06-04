@@ -17,6 +17,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Camera, User2 } from "lucide-react";
+import AdminRoute from "@/components/auth/AdminRoute";
 
 export default function SettingsPage() {
   const [cameraAccess, setCameraAccess] = useState(false);
@@ -27,6 +28,7 @@ export default function SettingsPage() {
   const [marketingPref, setMarketingPref] = useState("ask");
 
   return (
+    <AdminRoute>
     <main className="h-screen overflow-y-auto bg-gray-50">
       <section className="mx-auto max-w-5xl space-y-6 md:space-y-10 p-4 md:p-6 lg:p-10 pt-20 md:pt-6">
         {/* Account Settings */}
@@ -184,5 +186,6 @@ export default function SettingsPage() {
 
       </section>
     </main>
+    </AdminRoute>
   );
 }

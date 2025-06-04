@@ -11,6 +11,7 @@ import {
 import { FaEdit, FaFilePdf } from "react-icons/fa";
 import { HiDownload } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
+import UserRoute from "@/components/auth/UserRoute";
 
 /* ── DUMMY DATA ──────────────────────────────────────── */
 const dummyData = [
@@ -170,6 +171,8 @@ export default function MyFilesSection() {
 
   /* ─ UI ─ */
   return (
+    <UserRoute>
+
     <div className="mx-auto max-w-4xl p-6 space-y-6">
       <h1 className="text-3xl font-bold">My Files</h1>
 
@@ -201,7 +204,7 @@ export default function MyFilesSection() {
           value={filterMonths}
           onChange={(e) => setFilterMonths(Number(e.target.value))}
           className="rounded-lg border bg-blue-50 px-4 py-2 focus:ring-2 focus:ring-blue-400"
-        >
+          >
           {filterOptions.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
@@ -249,8 +252,8 @@ export default function MyFilesSection() {
 
                   return (
                     <li
-                      key={f.id}
-                      className="relative flex items-center justify-between rounded-lg border bg-white p-3 shadow-sm"
+                    key={f.id}
+                    className="relative flex items-center justify-between rounded-lg border bg-white p-3 shadow-sm"
                     >
                       {/* file left */}
                       <div className="flex items-center gap-3 min-w-0">
@@ -371,5 +374,6 @@ export default function MyFilesSection() {
         </div>
       )}
     </div>
+      </UserRoute>
   );
 }

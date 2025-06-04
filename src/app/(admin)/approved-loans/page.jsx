@@ -19,6 +19,7 @@ import {
   Pencil,
   Trash2,
 } from 'lucide-react';
+import AdminRoute from "@/components/auth/AdminRoute";
 
 const MS_IN_DAY = 86_400_000;
 
@@ -93,6 +94,7 @@ const filteredFiles = useMemo(() => {
 
 
   return (
+    <AdminRoute>
     <div className="px-6 py-10 space-y-8">
       <h1 className="text-3xl font-semibold text-blue-700">Generated Documents</h1>
 
@@ -171,6 +173,7 @@ const filteredFiles = useMemo(() => {
         ))}
       </div>
     </div>
+    </AdminRoute>
   );
 }
 

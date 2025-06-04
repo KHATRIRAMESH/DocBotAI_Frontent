@@ -6,13 +6,13 @@ import { loanFormConfig } from "../../app/lib/loan";
 import toast from "react-hot-toast";
 import { BiChevronRight } from "react-icons/bi";
 import { useAuth } from "@clerk/nextjs";
-import { socket } from "@/utils/socket"; // Ensure this path is correct
+import { socket } from "@/utils/socket"; 
 
 const SinglePageLoanModal = ({ loantype }) => {
   const { userId } = useAuth();
   const config = loanFormConfig[loantype];
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({ documents: [] }); // Initialize with documents array
+  const [formData, setFormData] = useState({ documents: [] }); 
   const [agreed, setAgreed] = useState(false);
 
   if (!config) return null;

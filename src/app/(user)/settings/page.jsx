@@ -17,6 +17,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Camera, User2 } from "lucide-react";
+import UserRoute from "@/components/auth/UserRoute";
 
 export default function SettingsPage() {
   const [cameraAccess, setCameraAccess] = useState(false);
@@ -27,6 +28,8 @@ export default function SettingsPage() {
   const [marketingPref, setMarketingPref] = useState("ask");
 
   return (
+    <UserRoute>
+
     <main className="h-screen overflow-y-auto bg-gray-50">
       <section className="mx-auto max-w-5xl space-y-6 md:space-y-10 p-4 md:p-6 lg:p-10 pt-20 md:pt-6">
         {/* Account Settings */}
@@ -113,15 +116,15 @@ export default function SettingsPage() {
               { id: 3, label: "Delete files that are unused for over 1 month", state: locationAccess, setState: setLocationAccess },
             ].map((item) => (
               <div
-                key={item.id}
+              key={item.id}
                 className="flex items-center justify-between rounded-lg bg-white px-4 md:px-5 py-3 md:py-4 shadow-sm ring-1 ring-gray-200"
-              >
+                >
                 <p className="text-sm font-medium text-gray-700">{item.label}</p>
                 <Switch
                   checked={item.state}
                   onCheckedChange={item.setState}
                   aria-label={`Toggle ${item.label}`}
-                />
+                  />
               </div>
             ))}
           </CardContent>
@@ -184,5 +187,6 @@ export default function SettingsPage() {
 
       </section>
     </main>
+            </UserRoute>
   );
 }

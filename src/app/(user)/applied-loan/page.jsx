@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import UserRoute from "@/components/auth/UserRoute";
+
 import {
   FaHome,
   FaGraduationCap,
@@ -199,6 +201,8 @@ export default function MyLoansPage() {
   }, [filter, loans]);
 
   return (
+    <UserRoute>
+
     <div className="flex min-h-screen flex-col bg-slate-50">
       <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 bg-white px-4 sm:px-6 py-4 shadow">
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
@@ -230,11 +234,11 @@ export default function MyLoansPage() {
                 key={loan.id}
                 loan={loan}
                 onView={() => setOpenLoan(loan)}
-              />
-            ))
-          ) : (
-            <p className="text-center text-gray-500">No loans found.</p>
-          )}
+                />
+              ))
+            ) : (
+              <p className="text-center text-gray-500">No loans found.</p>
+            )}
         </div>
       </main>
 
@@ -242,5 +246,6 @@ export default function MyLoansPage() {
         <MyLoanModal loan={openLoan} onClose={() => setOpenLoan(null)} />
       )}
     </div>
+      </UserRoute>
   );
 }

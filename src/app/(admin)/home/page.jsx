@@ -5,8 +5,11 @@ import { FaSearch, FaUserCircle } from "react-icons/fa";
 import { ChartLine, CircleFadingPlus } from "lucide-react";
 import { seedLoans, statusStyles, ranges } from "../../lib/adminData";
 import { RequestContext } from "../../../context/requestContext.js";
+import {useRole} from "@/hooks/useRole.js"
+import AdminRoute from "@/components/auth/AdminRoute"
 
 const Dashboard = () => {
+  const {user,role} = useRole()
   const [loans] = useState(seedLoans);
   const [search, setSearch] = useState("");
   const [rangeKey, setRangeKey] = useState("all");
@@ -51,6 +54,7 @@ const Dashboard = () => {
   const newest = filteredLoans.filter((l) => l.status === "new").length;
 
   return (
+    <AdminRoute>
     <div className="flex min-h-screen bg-gray-100">
       <main className="flex-1 p-6 space-y-8">
         {/* Search */}
@@ -366,6 +370,7 @@ const Dashboard = () => {
         </div>
       )}
     </div>
+    </AdminRoute>
   );
 };
 

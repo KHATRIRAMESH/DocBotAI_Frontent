@@ -8,29 +8,11 @@ import {
   RequestContextProvider,
   RequestContext,
 } from "../../context/requestContext.js";
+import AdminRoute from "@/components/auth/AdminRoute";
 
 export default function DashboardLayout({ children }) {
-  const { user } = useUser();
-  // console.log(user?.primaryEmailAddress?.emailAddress);
 
-  return (
-    <RequestContextProvider>
-      <div className="flex min-h-screen">
-        {/* Fixed Sidebar */}
-        <aside className="shrink-0 h-screen sticky top-0 overflow-y-auto border-r border-gray-200">
-          <AdminDashboardSideBar />
-        </aside>
-
-        {/* Scrollable Main Content */}
-        <main className="flex-1 overflow-y-auto bg-[#F5F5F5] min-h-screen">
-          <AdminSocketListener />
-          {children}
-        </main>
-      </div>
-    </RequestContextProvider>
-  );
-}
-
+  
 const AdminSocketListener = () => {
   const { setLoanRequest } = useContext(RequestContext);
 
@@ -54,3 +36,26 @@ const AdminSocketListener = () => {
 
   return null; // no UI needed, only listens
 };
+  const { user } = useUser();
+  // console.log(user?.primaryEmailAddress?.emailAddress);
+
+  return (
+    <AdminRoute>
+    <RequestContextProvider>
+      <div className="flex min-h-screen">
+        {/* Fixed Sidebar */}
+        <aside className="shrink-0 h-screen sticky top-0 overflow-y-auto border-r border-gray-200">
+          <AdminDashboardSideBar />
+        </aside>
+
+        {/* Scrollable Main Content */}
+        <main className="flex-1 overflow-y-auto bg-[#F5F5F5] min-h-screen">
+          <AdminSocketListener />
+          {children}
+        </main>
+      </div>
+    </RequestContextProvider>
+    </AdminRoute>
+  );
+}
+

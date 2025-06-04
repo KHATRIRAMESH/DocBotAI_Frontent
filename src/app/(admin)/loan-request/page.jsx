@@ -1,5 +1,6 @@
+
 "use client";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import toast from "react-hot-toast";
 import {
@@ -10,52 +11,10 @@ import {
   dummyLoans,
   FILTERS,
 } from "../../lib/loan";
-import { EyeIcon } from "lucide-react";
+import { CrossIcon, EyeIcon, ScanEyeIcon } from "lucide-react";
 import { RequestContext } from "@/context/requestContext";
 import VerificationCard from "@/components/admin/VerificationCard";
-
-
-function LoanCard({ loan, onView }) {
-  const meta = STATUS_META[loan.status] ?? STATUS_META.pending;
-  const TitleIcon = TITLE_ICONS[loan.title] ?? TITLE_ICONS.default;
-  const StatusIcon = meta.icon;
-  return (
-    <article className="w-full bg-white rounded-xl shadow transition hover:shadow-md p-4 flex flex-col sm:flex-row items-start gap-4">
-      <div className="text-2xl text-blue-500 shrink-0 mt-2 sm:mt-5 flex justify-center sm:block w-full sm:w-auto">
-        <TitleIcon size={34} />
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-800 flex flex-wrap items-center gap-2 text-center sm:text-left">
-          {loan.loanType}
-          <span className="text-xs text-gray-500 border bg-gray-200 px-1 rounded-full">
-            # {loan.userId ?? loan.id}
-          </span>
-          <span
-            className={clsx(
-              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-              meta.text,
-              meta.bg
-            )}
-          >
-            <StatusIcon className="h-3 w-3" /> {meta.label}
-          </span>
-        </h3>
-        <p className="mt-1 text-gray-600 line-clamp-2">{loan.description}</p>
-        <div className="mt-1 text-xs text-gray-400 text-left">
-          Received {new Date(loan.receivedAt).toLocaleString()}
-        </div>
-      </div>
-
-      <button
-        onClick={onView}
-        className="shrink-0 mt-4 sm:mt-0 sm:ml-4 w-full sm:w-auto inline-flex justify-center items-center gap-1 rounded-lg border border-blue-500 px-3 py-1.5 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none cursor-pointer"
-      >
-        View details
-      </button>
-    </article>
-  );
-}
+import AdminRoute from "@/components/auth/AdminRoute";
 
 function ApprovalModal({ onClose, onApprove }) {
   const [code, setCode] = useState("");
@@ -123,14 +82,76 @@ function ApprovalModal({ onClose, onApprove }) {
   );
 }
 
+function LoanCard({ loan, onView }) {
+  const meta = STATUS_META[loan?.status] || STATUS_META.pending;
+  const TitleIcon = TITLE_ICONS[loan?.loanType] || TITLE_ICONS.default;
+  const StatusIcon = meta.icon;
+
+  useEffect(() => {
+    console.log("UseEffect")
+  }, [])
+  
+  
+  return (
+    <article className="w-full bg-white rounded-xl shadow transition hover:shadow-md p-4 flex flex-col sm:flex-row items-start gap-4">
+      <div className="text-2xl text-blue-500 shrink-0 mt-2 sm:mt-5 flex justify-center sm:block w-full sm:w-auto">
+        <TitleIcon size={34} />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-gray-800 flex flex-wrap items-center gap-2 text-center sm:text-left">
+          {loan?.loanType || "Loan Application"}
+          <span className="text-xs text-gray-500 border bg-gray-200 px-1 rounded-full">
+            # {loan?.userId}
+          </span>
+          <span
+            className={clsx(
+              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+              meta.text,
+              meta.bg
+            )}
+          >
+            <StatusIcon className="h-3 w-3" /> {meta.label}
+          </span>
+        </h3>
+        <p className="mt-1 text-gray-600 line-clamp-2">
+          {loan?.description || `${loan?.loanType} application from ${loan?.fullName}`}
+        </p>
+        <div className="mt-1 text-xs text-gray-400 text-left">
+          Applicant: {loan?.fullName} | Address: {loan?.permanentAddress}
+        </div>
+        <div className="mt-1 text-xs text-gray-400 text-left">
+          Documents: {loan?.files ? loan?.files.length : 0} file(s) uploaded
+        </div>
+      </div>
+
+      <button
+        onClick={onView}
+        className="shrink-0 mt-4 sm:mt-0 sm:ml-4 w-full sm:w-auto inline-flex justify-center items-center gap-1 rounded-lg border border-blue-500 px-3 py-1.5 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none cursor-pointer"
+      >
+        View details
+      </button>
+    </article>
+  );
+}
+
 function LoanModal({ loan, onClose, onApprove, onResend }) {
   const meta = STATUS_META[loan.status] ?? STATUS_META.pending;
-  const config = loanFormConfig[loan.title] || {};
-  const data = sampleData[loan.id] || {};
   const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showResendModal, setShowResendModal] = useState(false);
+  const [comment, setComment] = useState("");
+   const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleImageClick = (url) => {
+    setPreviewUrl(url);
+  };
+
+  const closePreview = () => {
+    setPreviewUrl(null);
+  };
 
   const handleApprove = () => {
-    onApprove(loan.id);
+    onApprove(loan.id || loan.userId);
     toast.success("Loan has been approved successfully!");
   };
 
@@ -139,20 +160,16 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
   };
 
   const handleSendComment = (comment) => {
-    console.log("Resending documents with comment:", comment);
-    onResend(loan.id, comment);
+    onResend(loan.id || loan.userId, comment);
     toast.success(
       "Documents have been sent for reverification with your comments!"
     );
   };
 
-  const [showResendModal, setShowResendModal] = useState(false);
-  const [comment, setComment] = useState("");
-
   return (
     <>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center   bg-black/40 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
         onClick={onClose}
       >
         <div
@@ -167,7 +184,7 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
               ✕
             </button>
             <h4 className="mb-2 flex flex-wrap items-center gap-2 text-xl font-bold text-gray-800">
-              {loan.title}
+              {loan.loanType || "Loan Application"}
               <span
                 className={clsx(
                   "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
@@ -178,130 +195,216 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                 {meta.label}
               </span>
             </h4>
-            <p className="text-gray-700">{loan.description}</p>
-            <div className="mt-4 flex flex-wrap gap-2 text-sm text-gray-600">
+            <p className="text-gray-700">
+              {loan.description || `${loan.loanType} application for ${loan.fullName}`}
+            </p>
+            <div className="mt-4 flex flex-wrap justify-between gap-2 text-sm text-gray-600">
+              <span>
+                <strong>User ID:</strong> {loan.userId}
+              </span>
               <span>
                 <strong>Received:</strong>{" "}
-                {new Date(loan.receivedAt).toLocaleString()}
+                {loan.receivedAt 
+                  ? new Date(loan.receivedAt).toLocaleString()
+                  : new Date().toLocaleString()}
               </span>
               <span>
-                <strong>Reviewed:</strong>{" "}
+                {/* <strong>Reviewed:</strong>{" "}
                 {loan.reviewedAt
                   ? new Date(loan.reviewedAt).toLocaleString()
-                  : "—"}
+                  : "—"} */}
+                  <span><strong>Loan Code:</strong> {loan.loanCode}</span>
               </span>
             </div>
           </div>
+
           <div className="flex-1 overflow-y-auto p-6 scrollbar-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
               {/* Personal Information */}
-              {config.personalInfo && (
-                <div className="space-y-4">
-                  <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                    Personal Information
-                  </h5>
-                  {config.personalInfo.map((field) => (
-                    <div key={field.name}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {field.label}
-                      </label>
-                      <input
-                        type={field.type}
-                        value={data[field.name] || ""}
-                        readOnly
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                      />
-                    </div>
-                  ))}
+              <div className="space-y-4 md:col-span-2">
+                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Personal Information
+                </h5>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={loan.fullName || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
                 </div>
-              )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Loan Type
+                  </label>
+                  <input
+                    type="text"
+                    value={loan.loanType || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    User ID
+                  </label>
+                  <input
+                    type="text"
+                    value={loan.userId || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
+                
+                </div>
+              </div>
+
               {/* Address Information */}
-              {config.addressInfo && (
-                <div className="space-y-4">
-                  <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                    Address Information
-                  </h5>
-                  {config.addressInfo.map((field) => (
-                    <div key={field.name}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {field.label}
-                      </label>
-                      <input
-                        type={field.type}
-                        value={data[field.name] || ""}
-                        readOnly
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                      />
-                    </div>
-                  ))}
+              <div className="space-y-4 md:col-span-2">
+                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Address Information
+                </h5>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Permanent Address
+                  </label>
+                  <input 
+                  type="text"
+                    value={loan.permanentAddress || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 resize-none"
+                  />
                 </div>
-              )}
+
+                {/* Example: you can add more address fields here if any */}
+                {/* <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    value={loan.city || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
+                </div> */}
+              </div>
+
               {/* Bank Details */}
-              {config.bankDetails && (
-                <div className="space-y-4">
-                  <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                    Bank Details
-                  </h5>
-                  {config.bankDetails.map((field) => (
-                    <div key={field.name}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {field.label}
-                      </label>
-                      <input
-                        type={field.type}
-                        value={data[field.name] || ""}
-                        readOnly
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                      />
-                    </div>
-                  ))}
+              <div className="space-y-4 md:col-span-2">
+                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Bank Details
+                </h5>
+
+                {/* Replace below with your actual bank fields */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bank Name
+                  </label>
+                  <input
+                    type="text"
+                    value={loan.bankName || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
                 </div>
-              )}
-              {/* Documents */}
-              {config.documents && (
-                <div className="space-y-4">
-                  <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                    Documents
-                  </h5>
-                  {config.documents.map((field) => (
-                    <div key={field.name}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {field.label}
-                      </label>
-                      <div className="relative flex items-center">
-                        <input
-                          type="text"
-                          value={
-                            data.documents?.[field.name] || "No file uploaded"
-                          }
-                          readOnly
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 pr-10" // extra padding right for icon
-                        />
-                        {data.documents?.[field.name] && (
-                          <button
-                            onClick={() =>
-                              window.open(data.documents[field.name], "_blank")
-                            }
-                            type="button"
-                            aria-label="View document"
-                            className="absolute right-2 p-1 text-gray-600 hover:text-blue-600 cursor-pointer"
-                          >
-                            <EyeIcon className="h-5 w-5" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+{/* 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Account Number
+                  </label>
+                  <input
+                    type="text"
+                    value={loan.accountNumber || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
                 </div>
-              )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    IFSC Code
+                  </label>
+                  <input
+                    type="text"
+                    value={loan.ifscCode || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
+                </div> */}
+              </div>
+
+              {/* Uploaded Documents */}
+             <div className="space-y-4 md:col-span-2">
+  <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
+    Uploaded Documents
+  </h5>
+
+  {loan.files && loan.files.length > 0 ? (
+    <div className="flex flex-wrap gap-4">
+      {loan.files.map((fileUrl, index) => (
+        <div
+          key={index}
+          className="flex flex-col items-center w-32 cursor-pointer"
+          onClick={() => handleImageClick(fileUrl)}
+        >
+          <img
+            src={fileUrl}
+            alt={`Document ${index + 1}`}
+            className="w-28 h-28 object-cover border rounded hover:scale-105 transition-transform"
+          />
+          <p className="text-xs mt-2 text-center break-words">
+            {fileUrl.split('/').pop()}
+          </p>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="text-gray-500">No documents uploaded</p>
+  )}
+
+  {/* Full-screen Overlay Preview */}
+  {previewUrl && (
+    <div
+      className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
+      onClick={closePreview}
+    >
+      <div
+        className="relative max-w-full max-h-full p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          className="absolute top-2 right-2 text-white"
+          onClick={closePreview}
+        >
+          <CrossIcon className="h-6 w-6" />
+        </button>
+        <img
+          src={previewUrl}
+          alt="Preview"
+          className="max-w-full max-h-screen rounded shadow-lg"
+        />
+      </div>
+    </div>
+  )}
+</div>
+
             </div>
           </div>
+
           <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
             {loan.status !== "approved" && (
               <>
                 <button
                   onClick={handleResend}
-                  className="px-4 py-2 border cursor-pointer border-gray-300 bg-red-500 text-gray-200 rounded-lg hover:bg-red-600"
+                  className="px-4 py-2 border cursor-pointer border-gray-300 bg-red-500 text-white rounded-lg hover:bg-red-600"
                 >
                   Resend Documents
                 </button>
@@ -316,6 +419,7 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
           </div>
         </div>
       </div>
+
       {showApprovalModal && (
         <ApprovalModal
           onClose={() => setShowApprovalModal(false)}
@@ -337,6 +441,7 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
     </>
   );
 }
+
 
 function ResendModal({ onClose, onSend, comment, setComment }) {
   return (
@@ -390,12 +495,13 @@ function ResendModal({ onClose, onSend, comment, setComment }) {
 
 // Main page component - removed loans prop parameter
 export default function LoanRequestsPage() {
-  const { loanRequest } = useContext(RequestContext);
+  const { loanRequest, setLoanRequest, setError, setLoading } = useContext(RequestContext);
   const [filter, setFilter] = useState("all");
   const [openLoan, setOpenLoan] = useState(null);
 
+    
   // Use dummyLoans directly instead of accepting it as a prop
-  const loans = [loanRequest];
+  const loans = loanRequest;
   console.log("Loan Requests:", loans);
   // const filtered = useMemo(() => {
   //   if (filter === "all") return loans;
@@ -413,6 +519,7 @@ export default function LoanRequestsPage() {
   };
 
   return (
+    <AdminRoute>
     <div className="flex min-h-screen flex-col bg-slate-50">
       <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 bg-white px-4 sm:px-6 py-4 shadow">
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
@@ -438,17 +545,19 @@ export default function LoanRequestsPage() {
         </h2>
 
         <div className="space-y-4">
-          {loans && loans.length > 0 ? (
+          {loans && loans.length > 0? (
             loans.map((loan, index) => (
               <LoanCard
                 key={index}
                 loan={loan}
                 onView={() => setOpenLoan(loan)}
               />
+              // console.log("Loans",loan)
             ))
           ) : (
             <p className="text-center text-gray-500">No loans found.</p>
           )}
+          
         </div>
       </main>
       {openLoan && (
@@ -460,6 +569,7 @@ export default function LoanRequestsPage() {
         />
       )}
     </div>
+      </AdminRoute>
   );
 }
 

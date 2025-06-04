@@ -1,5 +1,6 @@
 import { Building2, CarFront, GraduationCap, Handshake, HeartPulse, HousePlus } from "lucide-react";
 import LoanCard from "../shared/LoanCard"
+import UserRoute from "../auth/UserRoute";
 const loanTypes = [
   {
     name: "Home Loan",
@@ -36,10 +37,12 @@ const loanTypes = [
 
 const UserDashboardComponent = () => {
   return (
+    <UserRoute>
     <section className="min-h-screen w-full bg-[#F5F5F5]">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <h2 className="text-5xl font-bold font-outfit text-center text-blue-600 mb-2">
           DocBot📑
+      
         </h2>
         <h3 className="text-2xl text-center text-blue-700 font-medium drop-shadow-sm mb-8">
           Choose your loan type
@@ -48,7 +51,7 @@ const UserDashboardComponent = () => {
        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 text-center">
   {loanTypes.map((loan) => (
     <LoanCard
-      key={loan.name}
+    key={loan.name}
       icon={loan.icon}
       name={loan.name}
       description={loan.description}
@@ -58,6 +61,7 @@ const UserDashboardComponent = () => {
 
       </div>
     </section>
+  </UserRoute>
   );
 };
 
