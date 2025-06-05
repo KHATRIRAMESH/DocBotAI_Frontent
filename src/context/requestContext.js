@@ -3,7 +3,7 @@ import { createContext, useEffect, useState } from "react";
 const RequestContext = createContext(null);
 
 const RequestContextProvider = ({ children }) => {
-  const [loanRequest, setLoanRequest] = useState(null);
+  const [loanRequest, setLoanRequest] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

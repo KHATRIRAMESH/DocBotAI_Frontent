@@ -11,15 +11,15 @@ import toast from "react-hot-toast";
 import {
   STATUS_META,
   TITLE_ICONS,
-  loanFormConfig,
-  sampleData,
-  dummyLoans,
   FILTERS,
 } from "../../lib/loan";
-import { CrossIcon, EyeIcon, ScanEyeIcon } from "lucide-react";
+import { CrossIcon, LoaderCircle } from "lucide-react";
 import { RequestContext } from "@/context/requestContext";
 import VerificationCard from "@/components/admin/VerificationCard";
 import AdminRoute from "@/components/auth/AdminRoute";
+
+
+
 
 function ApprovalModal({ onClose, onApprove }) {
   const [code, setCode] = useState("");
@@ -111,7 +111,7 @@ function LoanCard({ loan, onView }) {
               meta.bg
             )}
           >
-            <StatusIcon className="h-3 w-3" /> {meta.label}
+            <StatusIcon className="h-3 w-3" />{meta.label}
           </span>
         </h3>
         <p className="mt-1 text-gray-600 line-clamp-2">
@@ -138,46 +138,48 @@ function LoanCard({ loan, onView }) {
 
 function LoanModal({ loan, onClose, onApprove, onResend }) {
   const meta = STATUS_META[loan.status] ?? STATUS_META.pending;
+  const StatusIcon = meta.icon;
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [showResendModal, setShowResendModal] = useState(false);
   const [comment, setComment] = useState("");
   const [previewUrl, setPreviewUrl] = useState(null);
   const { setGeneratedDocument } = useContext(RequestContext);
+    const [dataLoading, setDataLoading] = useState(false);
 
-  const handleGenerateDocument = async () => {
-    try {
-      const generatedDocs = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin-verify/upload`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: loan.userId,
-            loanType: loan.loanType,
-            fullName: loan.fullName,
-            permanentAddress: loan.permanentAddress,
-            files: loan.files,
-            status: loan.status,
-          }),
-        }
-      );
 
-      if (!generatedDocs.ok) {
-        throw new Error("Failed to generate document");
+const handleGenerateDocument = async () => {
+  setDataLoading(true);
+  try {
+    const generatedDocs = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin-verify/upload`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: loan.userId,
+          loanType: loan.loanType,
+          fullName: loan.fullName,
+          permanentAddress: loan.permanentAddress,
+          files: loan.files,
+          status: loan.status,
+        }),
       }
-      const data = await generatedDocs.json();
-      console.log("Generated Document:", data);
-      setGeneratedDocument(data);
-      toast.success("Document generated successfully!");
-    } catch (error) {
-      console.error("Error generating document:", error);
-      // toast.error("Failed to generate document. Please try again.");
-    } finally {
-      // onclose();
-    }
-  };
+    );
+
+    if (!generatedDocs.ok) throw new Error("Failed to generate document");
+
+    const data = await generatedDocs.json();
+    setGeneratedDocument(data);
+    toast.success("Document generated successfully!");
+    onClose();
+  } catch (error) {
+    console.error("Error generating document:", error);
+    toast.error("Failed to generate document. Please try again.");
+  } finally {
+    setDataLoading(false);
+  }
+};
+
 
   const handleImageClick = (url) => {
     setPreviewUrl(url);
@@ -203,281 +205,161 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
     );
   };
 
-  return (
-    <>
+return (
+  <>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-        onClick={onClose}
+        className="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-hidden flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="p-6 border-b border-gray-200">
-            <button
-              onClick={onClose}
-              className="absolute right-3 top-3 text-gray-500 hover:text-gray-800 text-lg cursor-pointer z-10"
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200 relative">
+          <button
+            onClick={onClose}
+            disabled={dataLoading}
+            className="absolute right-3 top-3 text-gray-500 hover:text-gray-800 text-lg cursor-pointer z-10 hover:bg-red-500/40 px-3 py-1 rounded-full"
+          >
+            ✕
+          </button>
+          <h4 className="mb-2 flex flex-wrap items-center gap-2 text-xl font-bold text-gray-800">
+            {loan.loanType || "Loan Application"}
+            <span
+              className={clsx(
+                "inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ",
+                meta.text,
+                meta.bg
+              )}
             >
-              ✕
-            </button>
-            <h4 className="mb-2 flex flex-wrap items-center gap-2 text-xl font-bold text-gray-800">
-              {loan.loanType || "Loan Application"}
-              <span
-                className={clsx(
-                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-                  meta.text,
-                  meta.bg
-                )}
-              >
-                {meta.label}
-              </span>
-            </h4>
-            <p className="text-gray-700">
-              {loan.description ||
-                `${loan.loanType} application for ${loan.fullName}`}
-            </p>
-            <div className="mt-4 flex flex-wrap justify-between gap-2 text-sm text-gray-600">
-              <span>
-                <strong>User ID:</strong> {loan.userId}
-              </span>
-              <span>
-                <strong>Received:</strong>{" "}
-                {loan.receivedAt
-                  ? new Date(loan.receivedAt).toLocaleString()
-                  : new Date().toLocaleString()}
-              </span>
-              <span>
-                {/* <strong>Reviewed:</strong>{" "}
-                {loan.reviewedAt
-                  ? new Date(loan.reviewedAt).toLocaleString()
-                  : "—"} */}
-                <span>
-                  <strong>Loan Code:</strong> {loan.loanCode}
-                </span>
-              </span>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-6 scrollbar-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Personal Information */}
-              <div className="space-y-4 md:col-span-2">
-                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                  Personal Information
-                </h5>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={loan.fullName || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Loan Type
-                  </label>
-                  <input
-                    type="text"
-                    value={loan.loanType || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    User ID
-                  </label>
-                  <input
-                    type="text"
-                    value={loan.userId || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
-                </div>
-              </div>
-
-              {/* Address Information */}
-              {/* <div className="space-y-4 md:col-span-2"> */}
-              {/* <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                  Address Information
-                </h5>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Permanent Address
-                  </label>
-                  <input 
-                  type="text"
-                    value={loan.permanentAddress || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 resize-none"
-                  />
-                </div> */}
-
-              {/* Example: you can add more address fields here if any */}
-              {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    City
-                  </label>
-                  <input
-                    type="text"
-                    value={loan.city || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
-                </div> */}
-              {/* </div> */}
-
-              {/* Bank Details */}
-              {/* <div className="space-y-4 md:col-span-2"> */}
-              {/* <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                  Bank Details
-                </h5> */}
-
-              {/* Replace below with your actual bank fields */}
-              {/* <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Bank Name
-                  </label>
-                  <input
-                    type="text"
-                    value={loan.bankName || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
-                </div> */}
-              {/* 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Account Number
-                  </label>
-                  <input
-                    type="text"
-                    value={loan.accountNumber || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    IFSC Code
-                  </label>
-                  <input
-                    type="text"
-                    value={loan.ifscCode || ""}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                  />
-                </div> */}
-              {/* </div> */}
-
-              {/* Uploaded Documents */}
-              <div className="space-y-4 md:col-span-2">
-                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                  Uploaded Documents
-                </h5>
-
-                {loan.files && loan.files.length > 0 ? (
-                  <div className="flex flex-wrap gap-4">
-                    {loan.files.map((fileUrl, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col items-center w-32 cursor-pointer"
-                        onClick={() => handleImageClick(fileUrl)}
-                      >
-                        <img
-                          src={fileUrl}
-                          alt={`Document ${index + 1}`}
-                          className="w-28 h-28 object-cover border rounded hover:scale-105 transition-transform"
-                        />
-                        <p className="text-xs mt-2 text-center break-words">
-                          {fileUrl.split("/").pop()}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No documents uploaded</p>
-                )}
-
-                {/* Full-screen Overlay Preview */}
-                {previewUrl && (
-                  <div
-                    className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-                    onClick={closePreview}
-                  >
-                    <div
-                      className="relative max-w-full max-h-full p-4"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        className="absolute top-2 right-2 text-white"
-                        onClick={closePreview}
-                      >
-                        <CrossIcon className="h-6 w-6" />
-                      </button>
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="max-w-full max-h-screen rounded shadow-lg"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
-            {loan.status !== "approved" && (
-              <>
-                <button
-                  onClick={handleResend}
-                  className="px-4 py-2 border cursor-pointer border-gray-300 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                >
-                  Resend Documents
-                </button>
-                <button
-                  // onClick={() => setShowApprovalModal(true)}
-                  onClick={handleGenerateDocument}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer"
-                >
-                  Generate Document
-                </button>
-              </>
-            )}
+              Status: <StatusIcon className="animate-spin"/>{meta.label}
+            </span>
+          </h4>
+          <p className="text-gray-700 flex text-sm justify-between items-center">
+            {loan.description || `${loan.loanType} application by ${loan.fullName}.`}
+            <span><strong>Loan Code:</strong> {loan.loanCode}</span>
+          </p>
+          <div className="mt-4 flex flex-wrap justify-between gap-2 text-sm text-gray-600">
+            <span><strong>User ID:</strong> {loan.userId}</span>
+            <span>
+              <strong>Received At:</strong>{" "}
+              {loan.receivedAt ? new Date(loan.receivedAt).toLocaleString() : new Date().toLocaleString()}
+            </span>
           </div>
         </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 scrollbar-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Personal Info Section */}
+            <section className="space-y-4 md:col-span-2">
+              <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">Personal Information</h5>
+              {[
+                // { label: "User ID", value: loan.userId },
+                { label: "Full Name", value: loan.fullName },
+                { label: "Loan Type", value: loan.loanType },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+                  <input
+                    type="text"
+                    value={value || ""}
+                    readOnly
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+                  />
+                </div>
+              ))}
+            </section>
+
+            {/* Uploaded Documents */}
+            <section className="space-y-4 md:col-span-2">
+              <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">Uploaded Documents</h5>
+
+              {loan.files?.length > 0 ? (
+                <div className="flex flex-wrap gap-4">
+                  {loan.files.map((fileUrl, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col items-center w-32 cursor-pointer"
+                      onClick={() => handleImageClick(fileUrl)}
+                    >
+                      <img
+                        src={fileUrl}
+                        alt={`Document ${index + 1}`}
+                        className="w-28 h-28 object-cover border rounded hover:scale-105 transition-transform"
+                      />
+                      <p className="text-xs mt-2 text-center break-words">{fileUrl.split("/").pop()}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No documents uploaded</p>
+              )}
+
+              {previewUrl && (
+                <div
+                  className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
+                  onClick={closePreview}
+                >
+                  <div className="relative max-w-full max-h-full p-4" onClick={(e) => e.stopPropagation()}>
+                    <button className="absolute top-2 right-2 text-white" onClick={closePreview}>
+                      <CrossIcon className="h-6 w-6" />
+                    </button>
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="max-w-full max-h-screen rounded shadow-lg"
+                    />
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+          {loan.status !== "approved" && (
+            <>
+              <button
+                onClick={handleResend}
+                disabled={dataLoading}
+                className="px-4 py-2 border cursor-pointer border-gray-300 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
+                Resend Documents
+              </button>
+              <button
+                onClick={handleGenerateDocument}
+                disabled={dataLoading}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer"
+              >
+                {dataLoading ? <LoaderCircle className="animate-spin" />:"Generate Document"}
+              </button>
+            </>
+          )}
+        </div>
       </div>
+    </div>
 
-      {showApprovalModal && (
-        <ApprovalModal
-          onClose={() => setShowApprovalModal(false)}
-          onApprove={handleApprove}
-        />
-      )}
+    {/* Modals */}
+    {showApprovalModal && (
+      <ApprovalModal onClose={() => setShowApprovalModal(false)} onApprove={handleApprove} />
+    )}
+    {showResendModal && (
+      <ResendModal
+        onClose={() => {
+          setShowResendModal(false);
+          setComment("");
+        }}
+        onSend={handleSendComment}
+        comment={comment}
+        setComment={setComment}
+      />
+    )}
+  </>
+);
 
-      {showResendModal && (
-        <ResendModal
-          onClose={() => {
-            setShowResendModal(false);
-            setComment("");
-          }}
-          onSend={handleSendComment}
-          comment={comment}
-          setComment={setComment}
-        />
-      )}
-    </>
-  );
 }
 
 function ResendModal({ onClose, onSend, comment, setComment }) {
@@ -530,20 +412,29 @@ function ResendModal({ onClose, onSend, comment, setComment }) {
   );
 }
 
-// Main page component - removed loans prop parameter
 export default function LoanRequestsPage() {
   const { loanRequest, setLoanRequest, setError, setLoading } =
     useContext(RequestContext);
   const [filter, setFilter] = useState("all");
   const [openLoan, setOpenLoan] = useState(null);
+  const [sortOrder, setSortOrder] = useState("desc"); 
 
-  // Use dummyLoans directly instead of accepting it as a prop
-  const loans = loanRequest;
+  const loans = loanRequest ;
   console.log("Loan Requests:", loans);
-  // const filtered = useMemo(() => {
-  //   if (filter === "all") return loans;
-  //   return loans.filter((l) => l.status === filter);
-  // }, [loans, filter]);
+
+const filteredAndSortedLoans = (loans || [])
+  .filter((loan) => {
+    if (filter === "all") return true;
+    return loan.status === filter; 
+  })
+  .sort((a, b) => {
+    const dateA = new Date(a.submittedAt); 
+    const dateB = new Date(b.submittedAt);
+
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
+
+
 
   const handleApprove = (loanId) => {
     console.log("Approving loan:", loanId);
@@ -554,6 +445,7 @@ export default function LoanRequestsPage() {
     console.log("Resending documents for loan:", loanId);
     setOpenLoan(false);
   };
+ 
 
   return (
     <AdminRoute>
@@ -582,14 +474,13 @@ export default function LoanRequestsPage() {
           </h2>
 
           <div className="space-y-4">
-            {loans && loans.length > 0 ? (
-              loans.map((loan, index) => (
+            {filteredAndSortedLoans && filteredAndSortedLoans.length > 0 ? (
+              filteredAndSortedLoans.map((loan, index) => (
                 <LoanCard
                   key={index}
                   loan={loan}
                   onView={() => setOpenLoan(loan)}
                 />
-                // console.log("Loans",loan)
               ))
             ) : (
               <p className="text-center text-gray-500">No loans found.</p>
@@ -608,35 +499,3 @@ export default function LoanRequestsPage() {
     </AdminRoute>
   );
 }
-
-// const LoanRequestPage = () => {
-//   const { request } = useContext(RequestContext);
-//   const loanRequests = [request]
-//   console.log("Loan Requests:", loanRequests);
-//   return (
-//     <div className="flex min-h-screen flex-col bg-slate-50">
-//       <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 bg-white px-4 sm:px-6 py-4 shadow">
-//         <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
-//           Loan Requests
-//         </h1>
-//       </header>
-
-//       <main className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-4xl mx-auto w-full">
-//         <h2 className="mb-4 text-lg sm:text-xl font-semibold text-gray-700">
-//           All Loan Applications
-//         </h2>
-//         {loanRequests && loanRequests.length > 0 ? (
-//           loanRequests.map((loan, index) => (
-//             <VerificationCard key={index} data={loan} />
-//           ))
-//         ) : (
-//           <p className="text-center text-gray-500">
-//             No loan requests available.
-//           </p>
-//         )}
-//       </main>
-//     </div>
-//   );
-// };
-
-// export default LoanRequestPage;
