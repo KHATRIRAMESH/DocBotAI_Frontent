@@ -1,6 +1,11 @@
-
 "use client";
-import { useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import clsx from "clsx";
 import toast from "react-hot-toast";
 import {
@@ -87,11 +92,6 @@ function LoanCard({ loan, onView }) {
   const TitleIcon = TITLE_ICONS[loan?.loanType] || TITLE_ICONS.default;
   const StatusIcon = meta.icon;
 
-  useEffect(() => {
-    console.log("UseEffect")
-  }, [])
-  
-  
   return (
     <article className="w-full bg-white rounded-xl shadow transition hover:shadow-md p-4 flex flex-col sm:flex-row items-start gap-4">
       <div className="text-2xl text-blue-500 shrink-0 mt-2 sm:mt-5 flex justify-center sm:block w-full sm:w-auto">
@@ -115,7 +115,8 @@ function LoanCard({ loan, onView }) {
           </span>
         </h3>
         <p className="mt-1 text-gray-600 line-clamp-2">
-          {loan?.description || `${loan?.loanType} application from ${loan?.fullName}`}
+          {loan?.description ||
+            `${loan?.loanType} application from ${loan?.fullName}`}
         </p>
         <div className="mt-1 text-xs text-gray-400 text-left">
           Applicant: {loan?.fullName} | Address: {loan?.permanentAddress}
@@ -140,7 +141,43 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [showResendModal, setShowResendModal] = useState(false);
   const [comment, setComment] = useState("");
-   const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const { setGeneratedDocument } = useContext(RequestContext);
+
+  const handleGenerateDocument = async () => {
+    try {
+      const generatedDocs = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin-verify/upload`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: loan.userId,
+            loanType: loan.loanType,
+            fullName: loan.fullName,
+            permanentAddress: loan.permanentAddress,
+            files: loan.files,
+            status: loan.status,
+          }),
+        }
+      );
+
+      if (!generatedDocs.ok) {
+        throw new Error("Failed to generate document");
+      }
+      const data = await generatedDocs.json();
+      console.log("Generated Document:", data);
+      setGeneratedDocument(data);
+      toast.success("Document generated successfully!");
+    } catch (error) {
+      console.error("Error generating document:", error);
+      // toast.error("Failed to generate document. Please try again.");
+    } finally {
+      // onclose();
+    }
+  };
 
   const handleImageClick = (url) => {
     setPreviewUrl(url);
@@ -196,7 +233,8 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
               </span>
             </h4>
             <p className="text-gray-700">
-              {loan.description || `${loan.loanType} application for ${loan.fullName}`}
+              {loan.description ||
+                `${loan.loanType} application for ${loan.fullName}`}
             </p>
             <div className="mt-4 flex flex-wrap justify-between gap-2 text-sm text-gray-600">
               <span>
@@ -204,7 +242,7 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
               </span>
               <span>
                 <strong>Received:</strong>{" "}
-                {loan.receivedAt 
+                {loan.receivedAt
                   ? new Date(loan.receivedAt).toLocaleString()
                   : new Date().toLocaleString()}
               </span>
@@ -213,14 +251,15 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                 {loan.reviewedAt
                   ? new Date(loan.reviewedAt).toLocaleString()
                   : "—"} */}
-                  <span><strong>Loan Code:</strong> {loan.loanCode}</span>
+                <span>
+                  <strong>Loan Code:</strong> {loan.loanCode}
+                </span>
               </span>
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 scrollbar-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
               {/* Personal Information */}
               <div className="space-y-4 md:col-span-2">
                 <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
@@ -261,13 +300,12 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
                   />
-                
                 </div>
               </div>
 
               {/* Address Information */}
-              <div className="space-y-4 md:col-span-2">
-                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              {/* <div className="space-y-4 md:col-span-2"> */}
+              {/* <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
                   Address Information
                 </h5>
 
@@ -281,10 +319,10 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 resize-none"
                   />
-                </div>
+                </div> */}
 
-                {/* Example: you can add more address fields here if any */}
-                {/* <div>
+              {/* Example: you can add more address fields here if any */}
+              {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     City
                   </label>
@@ -295,16 +333,16 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
                   />
                 </div> */}
-              </div>
+              {/* </div> */}
 
               {/* Bank Details */}
-              <div className="space-y-4 md:col-span-2">
-                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              {/* <div className="space-y-4 md:col-span-2"> */}
+              {/* <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
                   Bank Details
-                </h5>
+                </h5> */}
 
-                {/* Replace below with your actual bank fields */}
-                <div>
+              {/* Replace below with your actual bank fields */}
+              {/* <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Bank Name
                   </label>
@@ -314,8 +352,8 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                     readOnly
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
                   />
-                </div>
-{/* 
+                </div> */}
+              {/* 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Account Number
@@ -339,63 +377,62 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
                   />
                 </div> */}
-              </div>
+              {/* </div> */}
 
               {/* Uploaded Documents */}
-             <div className="space-y-4 md:col-span-2">
-  <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
-    Uploaded Documents
-  </h5>
+              <div className="space-y-4 md:col-span-2">
+                <h5 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Uploaded Documents
+                </h5>
 
-  {loan.files && loan.files.length > 0 ? (
-    <div className="flex flex-wrap gap-4">
-      {loan.files.map((fileUrl, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center w-32 cursor-pointer"
-          onClick={() => handleImageClick(fileUrl)}
-        >
-          <img
-            src={fileUrl}
-            alt={`Document ${index + 1}`}
-            className="w-28 h-28 object-cover border rounded hover:scale-105 transition-transform"
-          />
-          <p className="text-xs mt-2 text-center break-words">
-            {fileUrl.split('/').pop()}
-          </p>
-        </div>
-      ))}
-    </div>
-  ) : (
-    <p className="text-gray-500">No documents uploaded</p>
-  )}
+                {loan.files && loan.files.length > 0 ? (
+                  <div className="flex flex-wrap gap-4">
+                    {loan.files.map((fileUrl, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col items-center w-32 cursor-pointer"
+                        onClick={() => handleImageClick(fileUrl)}
+                      >
+                        <img
+                          src={fileUrl}
+                          alt={`Document ${index + 1}`}
+                          className="w-28 h-28 object-cover border rounded hover:scale-105 transition-transform"
+                        />
+                        <p className="text-xs mt-2 text-center break-words">
+                          {fileUrl.split("/").pop()}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No documents uploaded</p>
+                )}
 
-  {/* Full-screen Overlay Preview */}
-  {previewUrl && (
-    <div
-      className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-      onClick={closePreview}
-    >
-      <div
-        className="relative max-w-full max-h-full p-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          className="absolute top-2 right-2 text-white"
-          onClick={closePreview}
-        >
-          <CrossIcon className="h-6 w-6" />
-        </button>
-        <img
-          src={previewUrl}
-          alt="Preview"
-          className="max-w-full max-h-screen rounded shadow-lg"
-        />
-      </div>
-    </div>
-  )}
-</div>
-
+                {/* Full-screen Overlay Preview */}
+                {previewUrl && (
+                  <div
+                    className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
+                    onClick={closePreview}
+                  >
+                    <div
+                      className="relative max-w-full max-h-full p-4"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        className="absolute top-2 right-2 text-white"
+                        onClick={closePreview}
+                      >
+                        <CrossIcon className="h-6 w-6" />
+                      </button>
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="max-w-full max-h-screen rounded shadow-lg"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -409,10 +446,11 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
                   Resend Documents
                 </button>
                 <button
-                  onClick={() => setShowApprovalModal(true)}
+                  // onClick={() => setShowApprovalModal(true)}
+                  onClick={handleGenerateDocument}
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 cursor-pointer"
                 >
-                  Approve Loan
+                  Generate Document
                 </button>
               </>
             )}
@@ -441,7 +479,6 @@ function LoanModal({ loan, onClose, onApprove, onResend }) {
     </>
   );
 }
-
 
 function ResendModal({ onClose, onSend, comment, setComment }) {
   return (
@@ -495,11 +532,11 @@ function ResendModal({ onClose, onSend, comment, setComment }) {
 
 // Main page component - removed loans prop parameter
 export default function LoanRequestsPage() {
-  const { loanRequest, setLoanRequest, setError, setLoading } = useContext(RequestContext);
+  const { loanRequest, setLoanRequest, setError, setLoading } =
+    useContext(RequestContext);
   const [filter, setFilter] = useState("all");
   const [openLoan, setOpenLoan] = useState(null);
 
-    
   // Use dummyLoans directly instead of accepting it as a prop
   const loans = loanRequest;
   console.log("Loan Requests:", loans);
@@ -520,56 +557,55 @@ export default function LoanRequestsPage() {
 
   return (
     <AdminRoute>
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 bg-white px-4 sm:px-6 py-4 shadow">
-        <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
-          Loan Requests
-        </h1>
+      <div className="flex min-h-screen flex-col bg-slate-50">
+        <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-4 bg-white px-4 sm:px-6 py-4 shadow">
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
+            Loan Requests
+          </h1>
 
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none"
-        >
-          {FILTERS.map((f) => (
-            <option key={f.value} value={f.value}>
-              {f.label}
-            </option>
-          ))}
-        </select>
-      </header>
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none"
+          >
+            {FILTERS.map((f) => (
+              <option key={f.value} value={f.value}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+        </header>
 
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-4xl mx-auto w-full">
-        <h2 className="mb-4 text-lg sm:text-xl font-semibold text-gray-700">
-          All Loan Applications
-        </h2>
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-4xl mx-auto w-full">
+          <h2 className="mb-4 text-lg sm:text-xl font-semibold text-gray-700">
+            All Loan Applications
+          </h2>
 
-        <div className="space-y-4">
-          {loans && loans.length > 0? (
-            loans.map((loan, index) => (
-              <LoanCard
-                key={index}
-                loan={loan}
-                onView={() => setOpenLoan(loan)}
-              />
-              // console.log("Loans",loan)
-            ))
-          ) : (
-            <p className="text-center text-gray-500">No loans found.</p>
-          )}
-          
-        </div>
-      </main>
-      {openLoan && (
-        <LoanModal
-          loan={openLoan}
-          onClose={() => setOpenLoan(null)}
-          onApprove={handleApprove}
-          onResend={handleResend}
-        />
-      )}
-    </div>
-      </AdminRoute>
+          <div className="space-y-4">
+            {loans && loans.length > 0 ? (
+              loans.map((loan, index) => (
+                <LoanCard
+                  key={index}
+                  loan={loan}
+                  onView={() => setOpenLoan(loan)}
+                />
+                // console.log("Loans",loan)
+              ))
+            ) : (
+              <p className="text-center text-gray-500">No loans found.</p>
+            )}
+          </div>
+        </main>
+        {openLoan && (
+          <LoanModal
+            loan={openLoan}
+            onClose={() => setOpenLoan(null)}
+            onApprove={handleApprove}
+            onResend={handleResend}
+          />
+        )}
+      </div>
+    </AdminRoute>
   );
 }
 

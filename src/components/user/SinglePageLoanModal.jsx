@@ -6,13 +6,13 @@ import { loanFormConfig } from "../../app/lib/loan";
 import toast from "react-hot-toast";
 import { BiChevronRight } from "react-icons/bi";
 import { useAuth } from "@clerk/nextjs";
-import { socket } from "@/utils/socket"; 
+import { socket } from "@/utils/socket";
 
 const SinglePageLoanModal = ({ loantype }) => {
   const { userId } = useAuth();
   const config = loanFormConfig[loantype];
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({ documents: [] }); 
+  const [formData, setFormData] = useState({ documents: [] });
   const [agreed, setAgreed] = useState(false);
 
   if (!config) return null;
@@ -64,10 +64,13 @@ const SinglePageLoanModal = ({ loantype }) => {
     const formPayload = prepareFormData(formData);
     console.log("Form Data to be submitted:", formPayload);
     try {
-      const response = await fetch("http://localhost:5000/api/upload-docs", {
-        method: "POST",
-        body: formPayload,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload-docs`,
+        {
+          method: "POST",
+          body: formPayload,
+        }
+      );
 
       if (!response.ok) throw new Error("Upload failed");
 
@@ -85,7 +88,7 @@ const SinglePageLoanModal = ({ loantype }) => {
       toast.error("Failed to submit application. Please try again.");
     } finally {
       setFormData({ documents: [] });
-      setAgreed(false); 
+      setAgreed(false);
       setIsOpen(false);
     }
   };
